@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChatraShakti — AI Study Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g:#0ff599;--gd:#00c97a;--gdd:#008a52;
+  --r:#ff4d4d;--rd:#cc2200;
+  --a:#ffb930;--ad:#e67e00;
+  --p:#a855f7;--pd:#7c3aed;
+  --b:#38bdf8;--bd:#0284c7;
+  --ink:#0d0d14;--ink2:#1a1a2e;--ink3:#2d2d4a;
+  --mist:#6b6b8a;--ghost:#9898b8;--pale:#c4c4d8;
+  --surf:#f0f0f8;--white:#ffffff;
+  --border:#e2e2f0;--border2:#d0d0e8;
+  --card:#ffffff;--bg:#f7f7fc;
+  --sh1:0 2px 12px rgba(13,13,20,.07);
+  --sh2:0 8px 32px rgba(13,13,20,.11);
+  --sh3:0 20px 60px rgba(13,13,20,.16);
+  --r4:4px;--r8:8px;--r12:12px;--r16:16px;--r24:24px;--r100:100px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden;line-height:1.6}
+.page{display:none;min-height:100vh}.page.active{display:block}
+ 
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--surf)}
+::-webkit-scrollbar-thumb{background:var(--pale);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--ghost)}
+ 
+/* ===== NAV ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:999;height:60px;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(247,247,252,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:1.4rem;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:2px}
+.nav-logo .dot{color:var(--g)}
+.nav-links{display:flex;align-items:center;gap:1.2rem}
+.nav-links a{font-size:.82rem;color:var(--mist);text-decoration:none;font-weight:500;transition:color .2s;cursor:pointer;letter-spacing:.3px}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{background:var(--ink);color:var(--white)!important;padding:.45rem 1.1rem;border-radius:var(--r100);font-size:.82rem!important;font-weight:600!important}
+.nav-cta:hover{background:var(--gdd)!important}
+.nav-panic{background:var(--r);color:var(--white)!important;padding:.45rem 1.1rem;border-radius:var(--r100);font-size:.82rem!important;animation:halo 2.5s infinite}
+@keyframes halo{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}50%{box-shadow:0 0 0 6px rgba(255,77,77,.25)}}
+ 
+/* ===== HERO ===== */
+.hero{padding:100px 2rem 5rem;max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1.15fr 1fr;gap:4rem;align-items:center}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,153,.08);border:1px solid rgba(0,255,153,.2);color:var(--gdd);font-size:.72rem;font-weight:600;padding:.3rem .9rem;border-radius:var(--r100);margin-bottom:1.5rem;letter-spacing:.5px;text-transform:uppercase}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.hero h1{font-family:'Instrument Serif',serif;font-size:3.8rem;line-height:1.08;letter-spacing:-.5px;color:var(--ink);margin-bottom:1.3rem}
+.hero h1 em{font-style:italic;color:var(--gdd)}
+.hero-sub{font-size:.98rem;color:var(--mist);line-height:1.78;margin-bottom:2rem;max-width:480px;font-weight:400}
+.hero-btns{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.75rem 1.5rem;border-radius:var(--r100);font-size:.88rem;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;transition:all .22s;border:none;text-decoration:none;letter-spacing:.2px}
+.btn-ink{background:var(--ink);color:var(--white)}.btn-ink:hover{background:var(--ink3);transform:translateY(-2px);box-shadow:var(--sh2)}
+.btn-green{background:var(--g);color:var(--ink)}.btn-green:hover{background:var(--gd);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--border2)}.btn-outline:hover{border-color:var(--ink);transform:translateY(-1px)}
+.btn-red{background:var(--r);color:var(--white)}.btn-red:hover{background:var(--rd);transform:translateY(-2px)}
+.btn-purple{background:var(--p);color:var(--white)}.btn-purple:hover{background:var(--pd);transform:translateY(-2px)}
+.btn-sm{padding:.45rem .9rem;font-size:.78rem}
+.hero-note{font-size:.75rem;color:var(--pale)}
+.hero-stats{display:flex;gap:2rem;margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border)}
+.hero-stat .num{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--ink);line-height:1}
+.hero-stat .lbl{font-size:.72rem;color:var(--mist);margin-top:.2rem}
+ 
+/* ===== HERO CARD ===== */
+.hero-card{background:var(--ink2);border-radius:var(--r24);border:1px solid rgba(255,255,255,.08);padding:1.8rem;box-shadow:var(--sh3);animation:float 5s ease-in-out infinite;position:relative;overflow:hidden}
+.hero-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(0,255,153,.08) 0%,transparent 60%);pointer-events:none}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.hc-title{font-size:.82rem;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;letter-spacing:.3px}
+.hm-grid{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-bottom:.6rem}
+.hm-cell{aspect-ratio:1;border-radius:3px}
+.hm-0{background:rgba(255,255,255,.06)}.hm-1{background:#1a6b4a}.hm-2{background:#25a870}.hm-3{background:#f5c842}.hm-4{background:#f59e0b}.hm-5{background:var(--r);animation:cellp 2s infinite}
+@keyframes cellp{0%,100%{opacity:1}50%{opacity:.5}}
+.hm-legend{display:flex;align-items:center;gap:.5rem;font-size:.62rem;color:rgba(255,255,255,.3);margin-bottom:1rem}
+.hm-dots{display:flex;gap:2px}.hm-dot{width:8px;height:8px;border-radius:2px}
+.alert-pill{background:rgba(255,77,77,.15);border:1px solid rgba(255,77,77,.3);border-radius:var(--r8);padding:.6rem .9rem;display:flex;gap:.6rem;margin-bottom:.6rem}
+.ap-icon{font-size:.9rem;flex-shrink:0;line-height:1.4}
+.ap-text p{font-size:.75rem;font-weight:600;color:#ff9090;margin-bottom:.1rem}
+.ap-text span{font-size:.68rem;color:rgba(255,255,255,.35)}
+.today-pill{background:rgba(0,255,153,.08);border:1px solid rgba(0,255,153,.15);border-radius:var(--r8);padding:.65rem .9rem}
+.tp-lbl{font-size:.62rem;color:var(--g);font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:.4rem}
+.tp-task{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:rgba(255,255,255,.7);padding:.15rem 0}
+.tp-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+ 
+/* ===== SECTIONS ===== */
+.section{padding:5rem 2rem;max-width:1160px;margin:0 auto}
+.s-eye{font-size:.72rem;font-weight:600;color:var(--gdd);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:.5rem}
+.s-title{font-family:'Instrument Serif',serif;font-size:2.6rem;color:var(--ink);line-height:1.15;margin-bottom:.8rem}
+.s-sub{font-size:.95rem;color:var(--mist);line-height:1.75;max-width:550px;margin-bottom:2.5rem}
+.divider{height:1px;background:var(--border)}
+.tc{text-align:center}
+ 
+/* ===== FEATURES ===== */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.feat-card{background:var(--card);border-radius:var(--r16);border:1px solid var(--border);padding:1.5rem;transition:all .25s;cursor:default}
+.feat-card:hover{border-color:var(--g);box-shadow:0 4px 20px rgba(0,255,153,.1);transform:translateY(-3px)}
+.feat-ico{width:44px;height:44px;border-radius:var(--r12);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1rem}
+.fi-g{background:rgba(0,255,153,.1)}.fi-r{background:rgba(255,77,77,.1)}.fi-a{background:rgba(255,185,48,.1)}.fi-b{background:rgba(56,189,248,.1)}.fi-p{background:rgba(168,85,247,.1)}.fi-k{background:rgba(255,150,200,.1)}
+.feat-card h3{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.feat-card p{font-size:.82rem;color:var(--mist);line-height:1.65}
+ 
+/* ===== HOW IT WORKS ===== */
+.how-wrap{background:var(--ink);padding:5rem 2rem}
+.how-inner{max-width:1160px;margin:0 auto}
+.how-wrap .s-eye{color:var(--g)}
+.how-wrap .s-title{color:var(--white)}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;position:relative;margin-top:3rem}
+.steps-line{position:absolute;top:26px;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1) 20%,rgba(255,255,255,.1) 80%,transparent)}
+.step{text-align:center;position:relative;z-index:1}
+.step-c{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:.78rem;color:rgba(255,255,255,.4);font-weight:700;transition:all .3s}
+.step:hover .step-c{background:var(--g);border-color:var(--g);color:var(--ink);transform:scale(1.12)}
+.step-name{font-size:.82rem;font-weight:600;color:rgba(255,255,255,.8);margin-bottom:.25rem}
+.step-desc{font-size:.72rem;color:rgba(255,255,255,.35);line-height:1.5}
+ 
+/* ===== MOOD SECTION ===== */
+.mood-section{padding:5rem 2rem;max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.mood-card{background:var(--card);border-radius:var(--r24);border:1px solid var(--border);padding:2rem;box-shadow:var(--sh2)}
+.mood-q{font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:.2rem}
+.mood-hint{font-size:.8rem;color:var(--mist);margin-bottom:1.3rem}
+.mood-emojis{display:flex;gap:.6rem;justify-content:center;margin-bottom:1.2rem}
+.emoji-btn{width:52px;height:52px;border-radius:50%;border:2px solid var(--border);background:var(--surf);font-size:1.35rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.emoji-btn:hover,.emoji-btn.sel{border-color:var(--g);background:rgba(0,255,153,.08);transform:scale(1.15)}
+.mood-bars-wrap{margin-top:.5rem}
+.mood-bars-label{font-size:.68rem;color:var(--mist);font-weight:600;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px}
+.mood-bars{display:flex;gap:5px;align-items:flex-end;height:60px}
+ 
+/* ===== MOOD ADJUST GRID ===== */
+.mood-adjust{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-top:1.5rem}
+.ma-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r12);padding:.9rem;text-align:center;transition:all .2s}
+.ma-card:hover{border-color:var(--g);transform:translateY(-2px)}
+.ma-card .ma-em{font-size:1.6rem;margin-bottom:.4rem}
+.ma-card .ma-lbl{font-size:.72rem;font-weight:700;color:var(--ink);margin-bottom:.25rem}
+.ma-card .ma-ch{font-size:.68rem;color:var(--mist);line-height:1.4}
+.ma-card.up .ma-ch{color:var(--gdd)}.ma-card.dn .ma-ch{color:var(--r)}
+ 
+/* ===== PANIC SECTION ===== */
+.panic-wrap{background:linear-gradient(135deg,#fff5f5,#fffafa);border-top:1px solid #ffe5e5;border-bottom:1px solid #ffe5e5;padding:5rem 2rem;text-align:center}
+.panic-inner{max-width:560px;margin:0 auto}
+.panic-ring{width:76px;height:76px;border-radius:50%;background:var(--r);display:flex;align-items:center;justify-content:center;margin:0 auto 1.6rem;font-size:1.8rem;animation:pring 2.5s ease-in-out infinite;cursor:pointer;transition:transform .2s}
+.panic-ring:hover{transform:scale(1.1)}
+@keyframes pring{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}50%{box-shadow:0 0 0 16px rgba(255,77,77,.1),0 0 0 32px rgba(255,77,77,.04)}}
+.panic-wrap h2{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--ink);margin-bottom:.7rem}
+.panic-wrap p{font-size:.92rem;color:var(--mist);line-height:1.75;margin-bottom:1.6rem}
+ 
+/* ===== TESTIMONIALS ===== */
+.testi-wrap{padding:5rem 2rem;background:var(--white)}
+.testi-inner{max-width:1160px;margin:0 auto}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.5rem}
+.testi-card{background:var(--bg);border-radius:var(--r16);padding:1.5rem;border:1px solid var(--border);position:relative}
+.testi-card::before{content:'"';font-family:'Instrument Serif',serif;font-size:4rem;color:rgba(0,255,153,.2);position:absolute;top:.4rem;left:1rem;line-height:1}
+.testi-text{font-size:.86rem;color:var(--mist);line-height:1.7;margin-bottom:1.1rem;padding-top:1.4rem;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:.6rem}
+.testi-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+.testi-name{font-size:.8rem;font-weight:700;color:var(--ink)}
+.testi-school{font-size:.7rem;color:var(--mist)}
+ 
+/* ===== SIGNUP ===== */
+.signup-wrap{padding:5rem 2rem;background:var(--bg)}
+.signup-inner{max-width:500px;margin:0 auto;text-align:center}
+.signup-form{background:var(--card);border-radius:var(--r24);border:1px solid var(--border);padding:2rem;box-shadow:var(--sh2);text-align:left}
+.form-group{margin-bottom:.9rem}
+.form-group label{display:block;font-size:.76rem;font-weight:600;color:var(--mist);margin-bottom:.35rem;letter-spacing:.3px;text-transform:uppercase}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:var(--r8);font-size:.88rem;font-family:'Syne',sans-serif;color:var(--ink);background:var(--white);transition:border-color .2s;outline:none;resize:vertical}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(0,255,153,.1)}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--pale)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.form-submit{width:100%;padding:.85rem;background:var(--ink);color:var(--white);border:none;border-radius:var(--r8);font-size:.92rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:all .2s;margin-top:.5rem;letter-spacing:.3px}
+.form-submit:hover{background:var(--gdd);transform:translateY(-1px)}
+.form-note{font-size:.7rem;color:var(--pale);text-align:center;margin-top:.7rem}
+ 
+/* ===== BADGES ===== */
+.badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;padding:.2rem .6rem;border-radius:var(--r100);letter-spacing:.2px}
+.b-red{background:rgba(255,77,77,.1);color:var(--r)}.b-green{background:rgba(0,255,153,.1);color:var(--gdd)}.b-amber{background:rgba(255,185,48,.1);color:var(--ad)}.b-purple{background:rgba(168,85,247,.1);color:var(--p)}.b-mist{background:var(--surf);color:var(--mist)}
+ 
+/* ===== FOOTER ===== */
+footer{background:var(--ink);padding:3rem 2rem 2rem}
+.footer-inner{max-width:1160px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem}
+.footer-logo{font-family:'Instrument Serif',serif;font-size:1.3rem;color:var(--white);margin-bottom:.6rem}
+.footer-logo .dot{color:var(--g)}
+.footer-tagline{font-size:.78rem;color:rgba(255,255,255,.3);line-height:1.65}
+.footer-col h4{font-size:.72rem;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:.9rem;text-transform:uppercase;letter-spacing:.8px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.footer-col ul li a{font-size:.78rem;color:rgba(255,255,255,.3);text-decoration:none;transition:color .2s;cursor:pointer}
+.footer-col ul li a:hover{color:var(--g)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:1.2rem;display:flex;align-items:center;justify-content:space-between;font-size:.74rem;color:rgba(255,255,255,.2)}
+ 
+/* ===== DASHBOARD ===== */
+.dash-layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{background:var(--ink2);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;width:220px;z-index:200;overflow-y:auto;border-right:1px solid rgba(255,255,255,.06)}
+.sb-logo{padding:1.2rem 1.4rem;border-bottom:1px solid rgba(255,255,255,.06);font-family:'Instrument Serif',serif;font-size:1.2rem;color:var(--white);cursor:pointer}
+.sb-logo .dot{color:var(--g)}
+.sb-nav{padding:.8rem 0;flex:1}
+.sb-item{display:flex;align-items:center;gap:.65rem;padding:.65rem 1.4rem;font-size:.82rem;color:rgba(255,255,255,.4);cursor:pointer;transition:all .2s;border-left:3px solid transparent;font-weight:500}
+.sb-item:hover{color:var(--white);background:rgba(255,255,255,.04)}
+.sb-item.active{color:var(--white);background:rgba(255,255,255,.07);border-left-color:var(--g)}
+.sb-icon{font-size:1rem;flex-shrink:0}
+.sb-panic{padding:1.2rem 1.4rem;border-top:1px solid rgba(255,255,255,.06)}
+.sb-panic-btn{width:100%;background:var(--r);color:white;border:none;border-radius:var(--r8);padding:.7rem;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;display:flex;align-items:center;justify-content:center;gap:.4rem;transition:all .2s;animation:sb-glow 3s infinite;letter-spacing:.2px}
+@keyframes sb-glow{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}50%{box-shadow:0 0 10px rgba(255,77,77,.5)}}
+.sb-panic-btn:hover{background:var(--rd);transform:scale(1.02)}
+.dash-main{margin-left:220px;padding:1.5rem;background:var(--bg);min-height:100vh}
+.dash-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.dash-greet h2{font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--ink)}
+.dash-greet p{font-size:.8rem;color:var(--mist);margin-top:.15rem}
+.dash-topbar-right{display:flex;gap:.6rem;align-items:center}
+.mood-chip{display:flex;align-items:center;gap:.4rem;background:var(--card);border:1px solid var(--border);border-radius:var(--r100);padding:.35rem .75rem;font-size:.76rem;color:var(--mist);cursor:pointer;transition:all .2s}
+.mood-chip:hover{border-color:var(--g)}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.2rem}
+.stat-card{background:var(--card);border-radius:var(--r12);border:1px solid var(--border);padding:1.1rem 1.2rem}
+.stat-lbl{font-size:.7rem;color:var(--mist);margin-bottom:.25rem;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.stat-val{font-family:'Instrument Serif',serif;font-size:1.9rem;color:var(--ink);line-height:1}
+.stat-sub{font-size:.68rem;color:var(--ghost);margin-top:.2rem}
+.sc-red{border-color:rgba(255,77,77,.25);background:#fff9f9}.sc-red .stat-val{color:var(--r)}
+.sc-green{border-color:rgba(0,255,153,.2);background:#f0fff8}.sc-green .stat-val{color:var(--gdd)}
+.sc-purple{border-color:rgba(168,85,247,.2);background:#faf5ff}.sc-purple .stat-val{color:var(--p)}
+.dash-grid{display:grid;grid-template-columns:1fr 340px;gap:1.2rem}
+.dash-card{background:var(--card);border-radius:var(--r12);border:1px solid var(--border);padding:1.3rem}
+.dash-card-title{font-size:.85rem;font-weight:700;color:var(--ink);margin-bottom:1.1rem;display:flex;align-items:center;justify-content:space-between;letter-spacing:.1px}
+.dash-card-title span{font-size:.72rem;color:var(--mist);font-weight:500}
+.cal-hdr{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-bottom:3px}
+.cal-wl{font-size:.6rem;color:var(--ghost);text-align:center}
+.cal-grid{display:grid;grid-template-columns:repeat(14,1fr);gap:3px}
+.cal-cell{aspect-ratio:1;border-radius:4px;cursor:pointer;transition:all .2s;position:relative}
+.cal-cell:hover{transform:scale(1.5);z-index:5}
+.cal-cell .tt{display:none;position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--ink);color:white;font-size:.6rem;padding:.25rem .5rem;border-radius:5px;white-space:nowrap;z-index:10;pointer-events:none;font-family:'DM Mono',monospace}
+.cal-cell:hover .tt{display:block}
+.cal-cell.cur{outline:2px solid var(--g);outline-offset:1px}
+.today-card{background:var(--card);border-radius:var(--r12);border:1px solid var(--border);padding:1.3rem}
+.today-title{font-size:.85rem;font-weight:700;color:var(--ink);margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem}
+.today-date-lbl{font-size:.7rem;color:var(--mist);font-weight:500}
+.task-row{display:flex;align-items:flex-start;gap:.65rem;padding:.7rem 0;border-bottom:1px solid var(--border)}
+.task-row:last-child{border-bottom:none}
+.task-ind{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.task-title{font-size:.84rem;font-weight:600;color:var(--ink);margin-bottom:.12rem}
+.task-meta{font-size:.72rem;color:var(--mist)}
+.task-pts{font-size:.68rem;font-weight:600;padding:.12rem .5rem;border-radius:var(--r100);flex-shrink:0;margin-left:auto}
+.tp-high{background:rgba(255,77,77,.1);color:var(--r)}.tp-mid{background:rgba(255,185,48,.1);color:var(--ad)}.tp-low{background:rgba(0,255,153,.1);color:var(--gdd)}
+.warn-card{background:linear-gradient(135deg,#fff5f0,#fff9f7);border:1px solid #ffd5c8;border-radius:var(--r12);padding:1.1rem;margin-top:.9rem}
+.warn-hdr{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.5rem}
+.warn-title{font-size:.82rem;font-weight:700;color:var(--rd)}
+.warn-text{font-size:.74rem;color:#c0604a;margin-top:.1rem;line-height:1.5}
+.warn-link{font-size:.74rem;color:var(--r);font-weight:600;cursor:pointer;text-decoration:underline}
+.course-row{display:flex;align-items:center;gap:.65rem;padding:.65rem 0;border-bottom:1px solid var(--border)}
+.course-row:last-child{border-bottom:none}
+.course-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.course-name{font-size:.82rem;font-weight:600;color:var(--ink);flex:1}
+.course-tasks{font-size:.72rem;color:var(--mist)}
+.course-stress{font-size:.72rem;font-weight:600}
+.mood-hist-bars{display:flex;gap:5px;align-items:flex-end;height:64px}
+.mood-insight{font-size:.76rem;color:var(--mist);margin-bottom:1rem;line-height:1.5}
+.mood-insight strong{color:var(--r)}
+.mt1{margin-top:.7rem}.mt2{margin-top:1.2rem}
+ 
+/* ===== UPLOAD ===== */
+.upload-page{max-width:700px;margin:0 auto;padding:2rem}
+.upload-hdr{text-align:center;margin-bottom:2rem}
+.upload-hdr h2{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--ink);margin-bottom:.5rem}
+.upload-hdr p{font-size:.88rem;color:var(--mist)}
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--r16);padding:2.5rem 2rem;text-align:center;background:var(--card);transition:all .3s;cursor:pointer;position:relative}
+.drop-zone:hover,.drop-zone.dov{border-color:var(--g);background:rgba(0,255,153,.04);transform:scale(1.01)}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-ico{font-size:2.5rem;margin-bottom:.8rem;display:block}
+.drop-ttl{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.3rem}
+.drop-sub{font-size:.82rem;color:var(--mist)}
+.drop-fmt{font-size:.7rem;color:var(--pale);margin-top:.4rem}
+.file-list{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.2rem}
+.file-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r8);padding:.9rem 1.1rem;display:flex;align-items:center;gap:.7rem}
+.file-ico{font-size:1.3rem}
+.file-info{flex:1}
+.file-name{font-size:.84rem;font-weight:600;color:var(--ink)}
+.file-status{font-size:.72rem;color:var(--mist)}
+.file-rm{background:none;border:none;color:var(--pale);cursor:pointer;font-size:1rem;padding:.2rem .4rem;border-radius:50%;transition:all .2s}
+.file-rm:hover{color:var(--r);background:rgba(255,77,77,.1)}
+.fi-ok .file-status{color:var(--gdd)}.fi-proc .file-status{color:var(--ad)}.fi-err .file-status{color:var(--r)}
+.prog-bar{height:3px;background:var(--border);border-radius:2px;margin-top:.35rem;overflow:hidden}
+.prog-fill{height:100%;background:var(--g);border-radius:2px;transition:width .4s}
+.process-btn{width:100%;padding:.9rem;background:var(--ink);color:white;border:none;border-radius:var(--r8);font-size:.92rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;letter-spacing:.2px}
+.process-btn:hover:not(:disabled){background:var(--gdd)}
+.process-btn:disabled{background:var(--border2);cursor:not-allowed;color:var(--ghost)}
+.syl-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.3rem}
+.syl-tab{padding:.55rem 1.1rem;font-size:.82rem;cursor:pointer;color:var(--mist);border-bottom:2px solid transparent;transition:all .2s;font-weight:600}
+.syl-tab.active{color:var(--gdd);border-bottom-color:var(--g)}
+.syl-tc{display:none}.syl-tc.active{display:block}
+.topic-tag{display:inline-flex;align-items:center;gap:.3rem;background:rgba(0,255,153,.08);color:var(--gdd);font-size:.76rem;padding:.25rem .65rem;border-radius:var(--r100);margin:.2rem;border:1px solid rgba(0,255,153,.15)}
+.topic-tag button{background:none;border:none;color:var(--gdd);cursor:pointer;font-size:.85rem;line-height:1;padding:0}
+.topics-box{display:flex;flex-wrap:wrap;gap:.2rem;min-height:36px;background:var(--surf);border-radius:var(--r8);padding:.4rem;border:1px solid var(--border);margin-top:.4rem}
+.syllabus-card{background:var(--card);border-radius:var(--r16);border:1px solid var(--border);padding:1.8rem;margin-bottom:1.2rem;box-shadow:var(--sh1)}
+.ext-preview{background:var(--card);border-radius:var(--r12);border:1px solid var(--border);padding:1.3rem;margin-top:1.2rem}
+.ext-title{font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem}
+.ext-item{display:flex;align-items:center;gap:.65rem;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.ext-item:last-child{border-bottom:none}
+.ext-type{font-size:.65rem;font-weight:600;padding:.12rem .5rem;border-radius:var(--r100);flex-shrink:0;min-width:46px;text-align:center}
+.et-ex{background:rgba(255,77,77,.1);color:var(--r)}.et-pa{background:rgba(168,85,247,.1);color:var(--p)}.et-qu{background:rgba(255,185,48,.1);color:var(--ad)}.et-re{background:rgba(0,255,153,.1);color:var(--gdd)}
+.ext-name{flex:1;color:var(--ink)}.ext-date{font-size:.74rem;color:var(--mist)}.ext-wt{font-size:.68rem;font-weight:600;color:var(--mist)}
+ 
+/* ===== LEARNING MODULE ===== */
+.module-page{max-width:940px;margin:0 auto;padding:2rem}
+.module-hdr{margin-bottom:2rem}
+.module-hdr h2{font-family:'Instrument Serif',serif;font-size:1.8rem;color:var(--ink);margin-bottom:.4rem}
+.module-hdr p{font-size:.85rem;color:var(--mist)}
+.module-list{display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.5rem}
+.module-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r12);overflow:hidden;transition:all .2s}
+.module-card:hover{border-color:var(--g);box-shadow:var(--sh1)}
+.module-card-hdr{display:flex;align-items:center;gap:.8rem;padding:1.1rem 1.3rem;cursor:pointer}
+.module-num{width:32px;height:32px;border-radius:50%;background:rgba(0,255,153,.1);color:var(--gdd);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.module-title{font-size:.9rem;font-weight:700;color:var(--ink);flex:1}
+.module-meta{font-size:.72rem;color:var(--mist)}
+.module-toggle{color:var(--mist);transition:transform .3s;font-size:.8rem}
+.module-card.open .module-toggle{transform:rotate(90deg)}
+.module-body{display:none;padding:0 1.3rem 1.3rem;border-top:1px solid var(--border);margin-top:0}
+.module-card.open .module-body{display:block}
+.module-content{font-size:.86rem;color:var(--ink2);line-height:1.75;white-space:pre-wrap;margin-bottom:1rem;padding:1rem;background:var(--surf);border-radius:var(--r8)}
+.module-quiz-btn{font-size:.78rem}
+.module-subtopics{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.subtopic-tag{font-size:.72rem;padding:.25rem .65rem;border-radius:var(--r100);background:var(--surf);color:var(--mist);border:1px solid var(--border)}
+.no-docs{text-align:center;padding:3rem;color:var(--mist)}
+.no-docs .big-ico{font-size:3rem;display:block;margin-bottom:.8rem}
+ 
+/* ===== CHECKIN ===== */
+.checkin-page{max-width:620px;margin:0 auto;padding:2rem}
+.checkin-hdr{text-align:center;margin-bottom:1.8rem}
+.checkin-hdr h2{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--ink);margin-bottom:.4rem}
+.checkin-card{background:var(--card);border-radius:var(--r24);border:1px solid var(--border);padding:2rem;box-shadow:var(--sh2);margin-bottom:1.3rem}
+.checkin-q{font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:1.3rem;text-align:center}
+.mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem;margin-bottom:1.3rem}
+.mood-opt{background:var(--surf);border:2px solid var(--border);border-radius:var(--r12);padding:.9rem .4rem;text-align:center;cursor:pointer;transition:all .2s}
+.mood-opt:hover,.mood-opt.sel{border-color:var(--g);background:rgba(0,255,153,.07);transform:translateY(-3px)}
+.mood-opt.sel{box-shadow:0 4px 16px rgba(0,255,153,.18)}
+.mood-em-big{font-size:1.7rem;display:block;margin-bottom:.35rem}
+.mood-lbl{font-size:.68rem;color:var(--mist);font-weight:600}
+.mood-adj-box{background:rgba(0,255,153,.06);border-radius:var(--r8);padding:.9rem 1rem;margin-top:.9rem;border-left:3px solid var(--g);display:none}
+.mood-adj-box h4{font-size:.82rem;font-weight:700;color:var(--gdd);margin-bottom:.3rem}
+.mood-adj-box p{font-size:.76rem;color:var(--mist);line-height:1.55}
+.checkin-notes{width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:var(--r8);font-family:'Syne',sans-serif;font-size:.86rem;resize:vertical;outline:none;transition:border-color .2s;color:var(--ink)}
+.checkin-notes:focus{border-color:var(--g)}
+.checkin-sub{width:100%;padding:.85rem;background:var(--ink);color:white;border:none;border-radius:var(--r8);font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:all .2s;margin-top:.9rem}
+.checkin-sub:hover{background:var(--gdd)}
+.mood-hist-card{background:var(--card);border-radius:var(--r16);border:1px solid var(--border);padding:1.8rem;box-shadow:var(--sh2)}
+.mood-hist-title{font-size:.85rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+ 
+/* ===== TIME DISPLAY ===== */
+.time-display{background:var(--ink2);border-radius:var(--r12);border:1px solid rgba(255,255,255,.08);padding:1.2rem;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between}
+.time-display .clock{font-family:'DM Mono',monospace;font-size:2rem;color:var(--g);font-weight:500}
+.time-display .mood-time-info{text-align:right}
+.time-display .mood-time-info .mti-lbl{font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.4px;margin-bottom:.2rem}
+.time-display .mood-time-info .mti-val{font-size:.9rem;color:rgba(255,255,255,.8);font-weight:600}
+ 
+/* ===== PLANNER ===== */
+.planner-page{max-width:880px;margin:0 auto;padding:2rem}
+.time-block{background:var(--card);border-radius:var(--r8);border:1px solid var(--border);padding:.9rem 1rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.9rem;transition:all .2s}
+.time-block:hover{border-color:var(--g);box-shadow:var(--sh1)}
+.tb-time{font-size:.75rem;color:var(--mist);font-weight:600;width:72px;flex-shrink:0;font-family:'DM Mono',monospace}
+.tb-color{width:3px;border-radius:2px;align-self:stretch;flex-shrink:0}
+.tb-info{flex:1}
+.tb-title{font-size:.85rem;font-weight:700;color:var(--ink);margin-bottom:.1rem}
+.tb-sub{font-size:.72rem;color:var(--mist)}
+.tb-dur{font-size:.72rem;color:var(--ghost);background:var(--surf);padding:.18rem .55rem;border-radius:var(--r100);flex-shrink:0;font-family:'DM Mono',monospace}
+.xp-bar-outer{background:var(--border);border-radius:var(--r100);height:8px;overflow:hidden}
+.xp-bar-fill{height:100%;background:linear-gradient(90deg,var(--g),var(--gd));border-radius:var(--r100);transition:width 1s ease}
+ 
+/* ===== QUIZ ===== */
+.quiz-page{max-width:680px;margin:0 auto;padding:2rem}
+.quiz-hdr{text-align:center;margin-bottom:1.8rem}
+.quiz-hdr h2{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--ink);margin-bottom:.4rem}
+.quiz-card{background:var(--card);border-radius:var(--r24);border:1px solid var(--border);padding:2rem;box-shadow:var(--sh2);margin-bottom:1.2rem}
+.quiz-prog-bar{height:5px;background:var(--border);border-radius:3px;margin-bottom:1.3rem;overflow:hidden}
+.quiz-prog-fill{height:100%;background:linear-gradient(90deg,var(--g),var(--gd));border-radius:3px;transition:width .4s}
+.quiz-qnum{font-size:.72rem;color:var(--mist);font-weight:600;margin-bottom:.4rem;font-family:'DM Mono',monospace}
+.quiz-qtext{font-size:.98rem;font-weight:600;color:var(--ink);margin-bottom:1.3rem;line-height:1.6}
+.quiz-opts{display:flex;flex-direction:column;gap:.5rem}
+.quiz-opt{background:var(--surf);border:1.5px solid var(--border);border-radius:var(--r8);padding:.75rem .9rem;cursor:pointer;transition:all .2s;font-size:.86rem;color:var(--ink);text-align:left;font-family:'Syne',sans-serif;font-weight:500}
+.quiz-opt:hover:not(.disabled){border-color:var(--g);background:rgba(0,255,153,.06)}
+.quiz-opt.sel{border-color:var(--g);background:rgba(0,255,153,.06)}
+.quiz-opt.correct{border-color:var(--gd);background:rgba(0,255,153,.1);color:var(--gdd)}
+.quiz-opt.wrong{border-color:var(--r);background:rgba(255,77,77,.08);color:var(--r)}
+.quiz-opt.disabled{cursor:default}
+.quiz-explain{display:none;margin-top:1rem;background:rgba(0,255,153,.06);border-radius:var(--r8);padding:.75rem .9rem;font-size:.8rem;color:var(--mist);border-left:3px solid var(--g);line-height:1.55}
+.quiz-actions{display:flex;justify-content:space-between;align-items:center;margin-top:1.3rem}
+.quiz-score-card{background:var(--card);border-radius:var(--r24);border:1px solid var(--border);padding:2.5rem;text-align:center;box-shadow:var(--sh2)}
+.qsc-circle{width:96px;height:96px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1.3rem;border:3px solid var(--g)}
+.qsc-num{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--gdd);line-height:1}
+.qsc-lbl{font-size:.65rem;color:var(--mist)}
+.gen-loading{display:flex;align-items:center;gap:.75rem;padding:2rem;font-size:.88rem;color:var(--mist)}
+.gen-spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--g);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+ 
+/* ===== LULLU AI ===== */
+.lullu-page{max-width:780px;margin:0 auto;padding:2rem;display:flex;flex-direction:column;height:calc(100vh - 60px)}
+.lullu-hdr{text-align:center;margin-bottom:1.2rem;flex-shrink:0}
+.lullu-hdr h2{font-family:'Instrument Serif',serif;font-size:1.8rem;color:var(--ink);margin-bottom:.2rem}
+.lullu-hdr p{font-size:.82rem;color:var(--mist)}
+.lullu-model-badge{display:inline-flex;align-items:center;gap:.35rem;background:rgba(0,255,153,.08);border:1px solid rgba(0,255,153,.2);color:var(--gdd);font-size:.68rem;font-weight:600;padding:.2rem .7rem;border-radius:var(--r100);margin-top:.4rem;font-family:'DM Mono',monospace}
+.lullu-chat{flex:1;background:var(--card);border-radius:var(--r16);border:1px solid var(--border);overflow-y:auto;padding:1.3rem;margin-bottom:.8rem;display:flex;flex-direction:column;gap:.9rem;min-height:280px;max-height:480px}
+.chat-msg{display:flex;gap:.65rem;align-items:flex-start}
+.chat-msg.user{flex-direction:row-reverse}
+.chat-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.chat-av.ai{background:linear-gradient(135deg,var(--g),var(--gd));color:var(--ink);font-size:.8rem;font-weight:700}
+.chat-av.user{background:var(--ink);color:white;font-size:.75rem;font-weight:700}
+.chat-bubble{max-width:78%;padding:.75rem .9rem;border-radius:var(--r12);font-size:.85rem;line-height:1.65}
+.chat-msg.ai .chat-bubble{background:var(--surf);color:var(--ink);border-radius:4px var(--r12) var(--r12) var(--r12)}
+.chat-msg.user .chat-bubble{background:var(--ink);color:white;border-radius:var(--r12) 4px var(--r12) var(--r12)}
+.chat-input-row{display:flex;gap:.6rem;flex-shrink:0}
+.chat-input{flex:1;padding:.75rem .9rem;border:1.5px solid var(--border);border-radius:var(--r100);font-size:.86rem;font-family:'Syne',sans-serif;color:var(--ink);outline:none;transition:border-color .2s}
+.chat-input:focus{border-color:var(--g)}
+.chat-send{background:var(--g);color:var(--ink);border:none;border-radius:var(--r100);padding:.75rem 1.3rem;font-size:.86rem;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;transition:all .2s}
+.chat-send:hover{background:var(--gd);transform:translateY(-1px)}
+.chat-send:disabled{background:var(--border2);cursor:not-allowed;color:var(--ghost)}
+.lullu-suggs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem;flex-shrink:0}
+.lullu-sugg{background:var(--card);border:1px solid var(--border);border-radius:var(--r100);padding:.35rem .8rem;font-size:.74rem;color:var(--mist);cursor:pointer;transition:all .2s;font-weight:500}
+.lullu-sugg:hover{border-color:var(--g);color:var(--gdd)}
+.typing-ind{display:flex;gap:3px;align-items:center;padding:.4rem 0}
+.typing-dot{width:5px;height:5px;border-radius:50%;background:var(--ghost);animation:td 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+ 
+/* ===== REWARDS ===== */
+.rewards-page{max-width:780px;margin:0 auto;padding:2rem}
+.reward-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-top:1.2rem}
+.reward-card{background:var(--card);border-radius:var(--r12);border:1px solid var(--border);padding:1.1rem;text-align:center;transition:all .2s}
+.reward-card:hover{border-color:var(--a);box-shadow:0 4px 16px rgba(255,185,48,.12);transform:translateY(-2px)}
+.reward-ico{font-size:1.9rem;margin-bottom:.4rem}
+.reward-name{font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:.18rem}
+.reward-desc{font-size:.7rem;color:var(--mist)}
+.reward-card.locked{opacity:.5;filter:grayscale(1)}
+.scratch-card{background:linear-gradient(135deg,var(--a),var(--ad));border-radius:var(--r12);padding:1.3rem;text-align:center;cursor:pointer;transition:all .3s;color:white}
+.scratch-card:hover{transform:scale(1.03);box-shadow:0 8px 24px rgba(255,185,48,.4)}
+.scratch-card h3{font-size:.92rem;font-weight:700;margin-bottom:.25rem}
+.scratch-card p{font-size:.76rem;opacity:.8}
+.streak-dots{display:flex;gap:.4rem;margin-top:.5rem}
+.streak-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;border:2px solid var(--border)}
+.streak-dot.done{background:var(--g);border-color:var(--g);color:var(--ink)}
+.streak-dot.today{background:var(--a);border-color:var(--a);color:white}
+ 
+/* ===== PANIC PAGE ===== */
+.panic-overlay{background:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;overflow:hidden}
+.panic-overlay::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(255,77,77,.06) 0%,transparent 70%);animation:prad 3s ease-in-out infinite}
+@keyframes prad{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.panic-close{position:absolute;top:1.5rem;right:1.5rem;background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.5);font-size:1rem;width:40px;height:40px;border-radius:50%;cursor:pointer;font-family:'Syne',sans-serif;transition:all .2s}
+.panic-close:hover{background:rgba(255,255,255,.15);color:white}
+.breathe-ring{width:150px;height:150px;border-radius:50%;border:2px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1.8rem;animation:breathe 4s ease-in-out infinite;position:relative}
+.breathe-ring::before{content:'';position:absolute;width:100%;height:100%;border-radius:50%;border:1px solid rgba(0,255,153,.2);animation:br-outer 4s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.18);box-shadow:0 0 0 25px rgba(255,255,255,.02)}}
+@keyframes br-outer{0%,100%{transform:scale(1.1);opacity:.3}50%{transform:scale(1.35);opacity:0}}
+.breathe-txt{font-family:'Instrument Serif',serif;font-size:.95rem;font-style:italic;color:rgba(255,255,255,.5);animation:btxt 4s ease-in-out infinite}
+@keyframes btxt{0%,100%{opacity:.5}50%{opacity:1}}
+ 
+/* ===== PANIC TIMER ===== */
+.panic-timer-wrap{background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.3);border-radius:var(--r16);padding:1.2rem 2rem;margin-bottom:1.5rem;display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.panic-timer-lbl{font-size:.7rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.panic-timer-clock{font-family:'DM Mono',monospace;font-size:3rem;color:var(--r);font-weight:500;line-height:1;animation:timer-pulse 1s ease-in-out infinite}
+@keyframes timer-pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.panic-timer-clock.alarm-ringing{color:#ff2020;animation:alarm-anim .5s ease-in-out infinite}
+@keyframes alarm-anim{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.05)}}
+.panic-timer-bar{width:100%;height:4px;background:rgba(255,77,77,.2);border-radius:2px;overflow:hidden;margin-top:.3rem}
+.panic-timer-fill{height:100%;background:var(--r);border-radius:2px;transition:width 1s linear}
+.stop-alarm-btn{background:var(--r);color:white;border:none;border-radius:var(--r100);padding:.55rem 1.5rem;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;animation:stopalm 0.4s ease-in-out infinite;display:none}
+@keyframes stopalm{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+ 
+.panic-title{font-family:'Instrument Serif',serif;font-size:1.9rem;color:var(--white);margin-bottom:.4rem}
+.panic-sub{font-size:.88rem;color:rgba(255,255,255,.4);margin-bottom:2rem;font-weight:400}
+.must-box{background:rgba(255,255,255,.04);border-radius:var(--r16);border:1px solid rgba(255,255,255,.08);padding:1.3rem;max-width:460px;width:100%;margin:0 auto 1.5rem;text-align:left}
+.must-ttl{font-size:.7rem;font-weight:600;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.9rem}
+.must-item{display:flex;align-items:flex-start;gap:.65rem;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.must-item:last-child{border-bottom:none}
+.must-num{width:26px;height:26px;border-radius:50%;background:var(--r);color:white;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.must-text{color:rgba(255,255,255,.75);font-size:.84rem;line-height:1.5}
+.must-meta{font-size:.68rem;color:rgba(255,255,255,.3);margin-top:.12rem}
+.panic-skipped{font-size:.74rem;color:rgba(255,255,255,.2);margin-bottom:1.5rem}
+.panic-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+.btn-ghost{background:rgba(255,255,255,.07);color:rgba(255,255,255,.65);padding:.6rem 1.3rem;border-radius:var(--r100);font-size:.82rem;font-weight:600;border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:'Syne',sans-serif;transition:all .2s}
+.btn-ghost:hover{background:rgba(255,255,255,.13);color:white}
+ 
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .55s ease forwards}.fu2{animation:fadeUp .55s .1s ease both}.fu3{animation:fadeUp .55s .2s ease both}
+ 
+/* ===== TOAST ===== */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:white;padding:.65rem 1.2rem;border-radius:var(--r100);font-size:.82rem;z-index:9999;transition:all .3s;transform:translateY(8px);opacity:0;font-family:'Syne',sans-serif;font-weight:500;pointer-events:none;border-left:3px solid var(--g)}
+ 
+/* ===== ALARM OVERLAY ===== */
+.alarm-overlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(255,0,0,.18);backdrop-filter:blur(4px);align-items:center;justify-content:center;flex-direction:column;animation:alarm-bg .4s ease-in-out infinite}
+.alarm-overlay.active{display:flex}
+@keyframes alarm-bg{0%,100%{background:rgba(255,0,0,.15)}50%{background:rgba(255,0,0,.3)}}
+.alarm-box{background:var(--ink2);border:2px solid var(--r);border-radius:var(--r24);padding:3rem 2.5rem;text-align:center;max-width:420px;width:100%;box-shadow:0 0 80px rgba(255,77,77,.5);animation:alarm-box-anim .4s ease-in-out infinite}
+@keyframes alarm-box-anim{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+.alarm-emoji{font-size:4rem;display:block;margin-bottom:1rem;animation:shake .4s ease-in-out infinite}
+@keyframes shake{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.alarm-title{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--white);margin-bottom:.5rem}
+.alarm-sub{font-size:.9rem;color:rgba(255,255,255,.5);margin-bottom:2rem}
+.alarm-stop-btn{background:var(--r);color:white;border:none;border-radius:var(--r100);padding:.85rem 2.5rem;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;animation:alarm-btn-glow .5s ease-in-out infinite;width:100%}
+@keyframes alarm-btn-glow{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,.6)}50%{box-shadow:0 0 20px rgba(255,77,77,.8),0 0 40px rgba(255,77,77,.4)}}
+ 
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;gap:2rem;padding:90px 1.5rem 3rem}
+  .feat-grid,.testi-grid{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:repeat(3,1fr)}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .mood-section{grid-template-columns:1fr;gap:2rem}
+  .dash-layout{grid-template-columns:1fr}
+  .sidebar{width:100%;position:relative;height:auto}
+  .dash-main{margin-left:0}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .mood-adjust{grid-template-columns:repeat(3,1fr)}
+  .reward-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+ 
+<!-- ===== ALARM OVERLAY ===== -->
+<div class="alarm-overlay" id="alarmOverlay">
+  <div class="alarm-box">
+    <span class="alarm-emoji">⏰</span>
+    <div class="alarm-title">Break's Over!</div>
+    <div class="alarm-sub">Your 10-minute panic break is done.<br>It's time to get back to studying. You've got this! 💪</div>
+    <button class="alarm-stop-btn" onclick="stopAlarm()">✓ I'm Ready to Study</button>
+  </div>
+</div>
+ 
+<!-- ===== LANDING ===== -->
+<div id="page-landing" class="page active">
+  <nav class="nav">
+    <div class="nav-logo" onclick="showPage('landing')">ChatraShakti<span class="dot">.</span></div>
+    <div class="nav-links">
+      <a onclick="scrollSec('features')">Features</a>
+      <a onclick="scrollSec('how-it-works')">How it works</a>
+      <a onclick="showPage('lullu')">Lullu AI</a>
+      <a onclick="showPage('checkin')">Mood</a>
+      <a onclick="showPage('signup')" class="nav-cta">Get Started →</a>
+    </div>
+  </nav>
+  <section class="hero">
+    <div class="fu">
+      <div></div>
+      <h1>Study smarter.<br><em>Not harder.</em></h1>
+      <p class="hero-sub">Upload your syllabus. Log your mood. ChatraShakti builds your personalized daily plan, adjusts it in real-time, quizzes you with AI, and rewards you for showing up every day.</p>
+      <div class="hero-btns">
+        <button class="btn btn-ink" onclick="showPage('signup')">📋 Map My Semester</button>
+        <button class="btn btn-outline" onclick="showPage('dashboard')">View Demo</button>
+        <button class="btn btn-purple" onclick="showPage('lullu')">🤖 Ask Lullu</button>
+      </div>
+      <p class="hero-note">No credit card · 60 seconds · Any syllabus format</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">4,200+</div><div class="lbl">Students using it</div></div>
+        <div class="hero-stat"><div class="num">38k+</div><div class="lbl">Deadlines extracted</div></div>
+        <div class="hero-stat"><div class="num">92%</div><div class="lbl">Feel less overwhelmed</div></div>
+      </div>
+    </div>
+    <div class="hero-card fu2">
+      <div class="hc-title">Stress Heatmap — Fall 2024 <span class="badge b-red">2 Danger Zones</span></div>
+      <div class="hm-grid" id="heroHeatmap"></div>
+      <div class="hm-legend"><span>Calm</span><div class="hm-dots"><div class="hm-dot" style="background:rgba(255,255,255,.06)"></div><div class="hm-dot" style="background:#1a6b4a"></div><div class="hm-dot" style="background:#f5c842"></div><div class="hm-dot" style="background:#f59e0b"></div><div class="hm-dot" style="background:var(--r)"></div></div><span>Critical</span></div>
+      <div class="alert-pill"><div class="ap-icon">⚠️</div><div class="ap-text"><p>Week 8 — Danger Zone</p><span>3 exams + 2 papers · Start Biology paper now</span></div></div>
+      <div class="today-pill">
+        <div class="tp-lbl">Do This Today · 😊 Mood Adjusted +10%</div>
+        <div class="tp-task"><div class="tp-dot" style="background:var(--r)"></div>Data Structures Midterm — due 11:59 PM</div>
+        <div class="tp-task"><div class="tp-dot" style="background:var(--a)"></div>Quiz — due 3:00 PM</div>
+        <div class="tp-task"><div class="tp-dot" style="background:var(--g)"></div>Chapter 7 reading — before class</div>
+      </div>
+    </div>
+  </section>
+ 
+  <div class="divider"></div>
+ 
+  <!-- FEATURES -->
+  <section class="section" id="features">
+    <div class="s-eye">What you get</div>
+    <div class="s-title">Everything your LMS is hiding from you</div>
+    <p class="s-sub">Real AI. Real quiz generation. Real document reading. Real mood-based planning. Not a fancy to-do list.</p>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-ico fi-r">🗓️</div><h3>Stress Heatmap</h3><p>Your semester visualized as a color-coded map. Danger weeks glow red. You'll see weeks 8 and 11 before they hit you.</p></div>
+      <div class="feat-card"><div class="feat-ico fi-g">✅</div><h3>Mood-Adjusted Planning</h3><p>Log your daily mood, and your entire schedule shifts. Feeling drained? Plan shrinks. Feeling great? Bonus topics unlock.</p></div>
+      <div class="feat-card"><div class="feat-ico fi-a">📄</div><h3>Real Document Upload</h3><p>Drop your actual PDF or Word syllabus. We extract every deadline, exam, quiz, and reading using real text parsing.</p></div>
+      <div class="feat-card"><div class="feat-ico fi-b">📚</div><h3>Learning Modules</h3><p>Your uploaded documents become interactive learning modules. Read, explore topics, and quiz yourself — all in one place.</p></div>
+      <div class="feat-card"><div class="feat-ico fi-p">🤖</div><h3>Lullu AI — Real ChatGPT-Like AI</h3><p>Powered by Claude. Ask anything — explain concepts, generate revision plans, get motivation. Like having a study buddy 24/7.</p></div>
+      <div class="feat-card"><div class="feat-ico fi-k">🏆</div><h3>AI Quiz Generator</h3><p>Real quizzes generated from your actual syllabus content by AI. Not pre-loaded questions — fresh every time from your docs.</p></div>
+      <div class="feat-card"><div class="feat-ico fi-r">🆘</div><h3>Panic Button + Timer</h3><p>One click clears everything. 10-minute breathing timer. Alarm rings until you click Stop. Then: only the 3 things that matter.</p></div>
+      <div class="feat-card"><div class="feat-ico fi-g">⏱️</div><h3>Live Time Display</h3><p>Real-time clock on your dashboard. Study hours adjust dynamically based on your mood score throughout the day.</p></div>
+      <div class="feat-card"><div class="feat-ico fi-a">🎟️</div><h3>XP + Scratch Cards</h3><p>Earn XP for tasks, quizzes, and streaks. Unlock real reward cards. Studying becomes a game you actually want to play.</p></div>
+    </div>
+  </section>
+ 
+  <div class="divider"></div>
+ 
+  <!-- MOOD ADJUST -->
+  <section class="section">
+    <div class="s-eye">Mood-Based System</div>
+    <div class="s-title">Your plan adjusts to how you feel</div>
+    <p class="s-sub">Every morning you pick an emoji. Your entire day — study time, difficulty, topic load — adjusts accordingly. For real.</p>
+    <div class="mood-adjust">
+      <div class="ma-card up"><div class="ma-em">😁</div><div class="ma-lbl">Very Happy</div><div class="ma-ch">+20–25% study time<br>Bonus challenge mode<br>Scratch card reward</div></div>
+      <div class="ma-card up"><div class="ma-em">😊</div><div class="ma-lbl">Happy</div><div class="ma-ch">+10–15% study time<br>1 extra topic<br>Harder AI quiz</div></div>
+      <div class="ma-card"><div class="ma-em">😐</div><div class="ma-lbl">Neutral</div><div class="ma-ch">Standard plan<br>Normal schedule<br>Regular quiz</div></div>
+      <div class="ma-card dn"><div class="ma-em">😫</div><div class="ma-lbl">Tired</div><div class="ma-ch">−15–20% study time<br>Light revision only<br>Topics shift to tomorrow</div></div>
+      <div class="ma-card dn"><div class="ma-em">😢</div><div class="ma-lbl">Drowning</div><div class="ma-ch">−30–40% study time<br>Easy topics only<br>Lullu motivates you</div></div>
+    </div>
+  </section>
+ 
+  <!-- HOW IT WORKS -->
+  <section class="how-wrap" id="how-it-works">
+    <div class="how-inner">
+      <div class="s-eye">How it works</div>
+      <div class="s-title">From chaos to clarity in 5 steps</div>
+      <div class="steps">
+        <div class="steps-line"></div>
+        <div class="step"><div class="step-c">01</div><div class="step-name">Sign up</div><div class="step-desc">30 seconds. No card needed.</div></div>
+        <div class="step"><div class="step-c">02</div><div class="step-name">Upload syllabus</div><div class="step-desc">Real PDFs or manual topics.</div></div>
+        <div class="step"><div class="step-c">03</div><div class="step-name">Log your mood</div><div class="step-desc">Daily emoji adjusts everything.</div></div>
+        <div class="step"><div class="step-c">04</div><div class="step-name">Study + learn</div><div class="step-desc">Modules, planner, Lullu AI.</div></div>
+        <div class="step"><div class="step-c">05</div><div class="step-name">Quiz + earn</div><div class="step-desc">AI quiz + XP + scratch cards.</div></div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- MOOD SECTION -->
+  <section class="mood-section">
+    <div>
+      <div class="s-eye">Daily Check-in</div>
+      <div class="s-title" style="margin-bottom:.8rem">Your burnout pattern, made visible</div>
+      <p style="font-size:.92rem;color:var(--mist);line-height:1.78;margin-bottom:1rem">One tap each morning. We track how your mood correlates with your workload. You'll see — and predict — when you're about to crash before it happens.</p>
+      <p style="font-size:.86rem;color:var(--ghost);line-height:1.65;margin-bottom:1.3rem">Students logging moods for 4+ weeks can predict burnout with 87% accuracy.</p>
+      <button class="btn btn-green" onclick="showPage('checkin')">Try Today's Check-in →</button>
+    </div>
+    <div class="mood-card">
+      <p class="mood-q">How's your brain today?</p>
+      <p class="mood-hint">Tap honestly. Your plan adjusts automatically.</p>
+      <div class="mood-emojis">
+        <button class="emoji-btn" onclick="selMood(this)">😁</button>
+        <button class="emoji-btn" onclick="selMood(this)">😊</button>
+        <button class="emoji-btn sel" onclick="selMood(this)">😐</button>
+        <button class="emoji-btn" onclick="selMood(this)">😫</button>
+        <button class="emoji-btn" onclick="selMood(this)">😢</button>
+      </div>
+      <div class="mood-bars-wrap">
+        <div class="mood-bars-label">Mood this week</div>
+        <div class="mood-bars" id="moodPreviewBars"></div>
+        <div style="display:flex;gap:5px;margin-top:3px">
+          <span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">M</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">T</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">W</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">T</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">F</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">M</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">T</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">W</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">T</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">F</span>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- PANIC SECTION -->
+  <section class="panic-wrap">
+    <div class="panic-inner">
+      <div class="panic-ring" onclick="showPage('panic')">🆘</div>
+      <h2>The Panic Button</h2>
+      <p>When everything feels like too much — one click. Screen clears. Breathing guide appears. A 10-minute timer starts. When it rings, an alarm plays until you click Stop. Then: only the 3 things you must do to not fail.</p>
+      <button class="btn btn-red" onclick="showPage('panic')">Try Panic Mode →</button>
+    </div>
+  </section>
+ 
+  <!-- TESTIMONIALS -->
+  <section class="testi-wrap">
+    <div class="testi-inner">
+      <div class="s-eye tc">From real students</div>
+      <div class="s-title tc">They stopped guessing when they'd crash</div>
+      <div class="testi-grid">
+        <div class="testi-card"><p class="testi-text">I uploaded my actual syllabus PDF and within 60 seconds saw Week 11 would destroy me. Started 3 weeks early for the first time in my life.</p><div class="testi-author"><div class="testi-av" style="background:rgba(0,255,153,.1);color:var(--gdd)">MR</div><div><div class="testi-name">Maya R.</div><div class="testi-school">BITS Pilani, CS Junior</div></div></div></div>
+        <div class="testi-card"><p class="testi-text">Lullu AI actually explains things! I asked it to explain binary trees like I'm 5 and it did. Then quizzed me on it. It's like having a genius friend who's always awake.</p><div class="testi-author"><div class="testi-av" style="background:rgba(168,85,247,.1);color:var(--p)">AK</div><div><div class="testi-name">Arjun K.</div><div class="testi-school">IIT Delhi, 2nd Year</div></div></div></div>
+        <div class="testi-card"><p class="testi-text">The panic button timer is genius. I get exactly 10 minutes to breathe, then the alarm brings me back. It's the only system that actually worked for my anxiety.</p><div class="testi-author"><div class="testi-av" style="background:rgba(255,77,77,.1);color:var(--r)">PL</div><div><div class="testi-name">Priya L.</div><div class="testi-school">DU, Economics Senior</div></div></div></div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- SIGNUP SECTION -->
+  <section class="signup-wrap">
+    <div class="signup-inner">
+      <div class="s-eye tc">Get started free</div>
+      <div class="s-title tc">Map your semester</div>
+      <p style="font-size:.92rem;color:var(--mist);margin-bottom:1.8rem;font-weight:400">Syllabus processed in under 60 seconds.</p>
+      <div class="signup-form">
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" placeholder="First Name"></div>
+          <div class="form-group"><label>Last Name</label><input type="text" placeholder="Last Name"></div>
+        </div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="University Email"></div>
+        <div class="form-row">
+          <div class="form-group"><label>University</label><input type="text" placeholder="IIT Delhi"></div>
+          <div class="form-group"><label>Grad Year</label><select><option>2025</option><option selected>2026</option><option>2027</option><option>2028</option></select></div>
+        </div>
+        <button class="form-submit" onclick="showPage('upload')">Create my stress map →</button>
+        <p class="form-note">By signing up you agree to our terms. We never sell your data.</p>
+      </div>
+    </div>
+  </section>
+ 
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div><div class="footer-logo">ChatraShakti<span class="dot">.</span></div><p class="footer-tagline">Built for students who are tired of burning out. We don't just show you deadlines — we show you when you're going to crash, and help you prevent it.</p></div>
+        <div class="footer-col"><h4>Product</h4><ul><li><a>Heatmap</a></li><li><a>Mood Tracker</a></li><li><a>Lullu AI</a></li><li><a>Quiz Generator</a></li><li><a>Rewards</a></li></ul></div>
+        <div class="footer-col"><h4>Company</h4><ul><li><a>About</a></li><li><a>Blog</a></li><li><a>Careers</a></li><li><a>Press</a></li></ul></div>
+        <div class="footer-col"><h4>Support</h4><ul><li><a>Help Center</a></li><li><a>Privacy</a></li><li><a>Terms</a></li><li><a>Contact</a></li></ul></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 ChatraShakti. All rights reserved.</span><span>Made with 💚 for sleep-deprived students</span></div>
+    </div>
+  </footer>
+</div>
+ 
+<!-- ===== SIGNUP PAGE ===== -->
+<div id="page-signup" class="page">
+  <nav class="nav"><div class="nav-logo" onclick="showPage('landing')">ChatraShakti<span class="dot">.</span></div><div class="nav-links"><a onclick="showPage('landing')">← Back</a></div></nav>
+  <div style="padding:90px 2rem 3rem;max-width:500px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:1.8rem">
+      <div class="s-eye tc">Step 1 of 3</div>
+      <div class="s-title" style="font-size:2rem;margin-bottom:.4rem">Create your account</div>
+      <p style="font-size:.88rem;color:var(--mist)">Takes 30 seconds.</p>
+    </div>
+    <div class="signup-form">
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input type="text" placeholder="Last Name" id="fn"></div>
+        <div class="form-group"><label>Last Name</label><input type="text" placeholder="Last Name" id="ln"></div>
+      </div>
+      <div class="form-group"><label>Email</label><input type="email" placeholder="University Email" id="em"></div>
+      <div class="form-row">
+        <div class="form-group"><label>University</label><input type="text" placeholder="College Name" id="uni"></div>
+        <div class="form-group"><label>Grad Year</label><select id="grad"><option>2025</option><option selected>2026</option><option>2027</option><option>2028</option></select></div>
+      </div>
+      <div class="form-group"><label>Password</label><input type="password" placeholder="Create a password"></div>
+      <button class="form-submit" onclick="showPage('upload')">Continue → Upload Syllabus</button>
+      <p class="form-note">Already have an account? <a onclick="showPage('dashboard')" style="color:var(--gdd);cursor:pointer">Log in</a></p>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== UPLOAD PAGE ===== -->
+<div id="page-upload" class="page">
+  <nav class="nav"><div class="nav-logo" onclick="showPage('landing')">ChatraShakti<span class="dot">.</span></div><div class="nav-links"><a onclick="showPage('signup')">← Back</a><button class="btn btn-sm btn-outline" onclick="showPage('dashboard')">Skip →</button></div></nav>
+  <div style="padding:80px 2rem 3rem">
+    <div class="upload-page">
+      <div class="upload-hdr">
+        <div class="s-eye tc">Step 2 of 3</div>
+        <h2>Upload your syllabus</h2>
+        <p>Drop your real PDF or Word files — we extract every deadline, exam, quiz, and reading. Or enter topics manually.</p>
+      </div>
+      <div class="syllabus-card">
+        <div class="syl-tabs">
+          <div class="syl-tab active" onclick="switchTab('file')">📄 Upload Files</div>
+          <div class="syl-tab" onclick="switchTab('manual')">✏️ Enter Manually</div>
+        </div>
+        <!-- FILE TAB -->
+        <div class="syl-tc active" id="tab-file">
+          <div class="drop-zone" id="dropZone">
+            <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.txt" onchange="handleFiles(event)">
+            <span class="drop-ico">📄</span>
+            <div class="drop-ttl">Drop your syllabus files here</div>
+            <div class="drop-sub">Or click to browse</div>
+            <div class="drop-fmt">PDF, DOCX, TXT · Max 5 files · 10MB each</div>
+          </div>
+          <div class="file-list" id="fileList"></div>
+        </div>
+        <!-- MANUAL TAB -->
+        <div class="syl-tc" id="tab-manual">
+          <div class="form-group">
+            <label>Course Name</label>
+            <input type="text" id="manualCourse" placeholder="e.g. Data Structures (CS 301)">
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Exam Date</label><input type="date" id="manualExam"></div>
+            <div class="form-group"><label>Total Study Hours</label><input type="number" id="manualHours" placeholder="40" min="1"></div>
+          </div>
+          <div class="form-group">
+            <label>Add Topics (press Enter)</label>
+            <div style="display:flex;gap:.5rem">
+              <input type="text" id="topicInput" placeholder="e.g. Arrays and Linked Lists" onkeydown="if(event.key==='Enter'){event.preventDefault();addTopic()}" style="flex:1">
+              <button class="btn btn-green btn-sm" onclick="addTopic()">Add</button>
+            </div>
+            <div class="topics-box" id="topicsBox"></div>
+          </div>
+          <button class="btn btn-outline btn-sm" style="margin-top:.5rem" onclick="addManualCourse()">+ Add This Course</button>
+          <div id="manualCourseList" style="margin-top:.9rem"></div>
+        </div>
+      </div>
+      <button class="process-btn" id="processBtn" disabled onclick="processFiles()">
+        <span id="processBtnText">Add files or enter topics to continue</span>
+      </button>
+      <div class="ext-preview" id="extPreview" style="display:none">
+        <div class="ext-title">✅ <span id="extCount">Extracted items</span></div>
+        <div id="extItems"></div>
+        <div style="margin-top:1.1rem;text-align:center">
+          <button class="btn btn-green" onclick="showPage('checkin')">Set Mood & Generate Plan →</button>
+          <button class="btn btn-outline btn-sm" style="margin-left:.6rem" onclick="showPage('modules')">📚 View Learning Modules</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== DASHBOARD ===== -->
+<div id="page-dashboard" class="page">
+  <div class="dash-layout">
+    <aside class="sidebar">
+      <div class="sb-logo" onclick="showPage('landing')">ChatraShakti<span class="dot">.</span></div>
+      <nav class="sb-nav">
+        <div class="sb-item active" onclick="navClick(this,'dashboard')"><span class="sb-icon">⊞</span>Overview</div>
+        <div class="sb-item" onclick="navClick(this,'planner')"><span class="sb-icon">📅</span>Daily Planner</div>
+        <div class="sb-item" onclick="navClick(this,'modules')"><span class="sb-icon">📚</span>Learning Modules</div>
+        <div class="sb-item" onclick="navClick(this,'quiz')"><span class="sb-icon">🧪</span>AI Quiz</div>
+        <div class="sb-item" onclick="navClick(this,'lullu')"><span class="sb-icon">🤖</span>Lullu AI</div>
+        <div class="sb-item" onclick="navClick(this,'checkin')"><span class="sb-icon">💭</span>Mood Tracker</div>
+        <div class="sb-item" onclick="navClick(this,'rewards')"><span class="sb-icon">🏆</span>Rewards</div>
+        <div class="sb-item" onclick="navClick(this,'upload')"><span class="sb-icon">📤</span>Add Syllabus</div>
+      </nav>
+      <div class="sb-panic">
+        <button class="sb-panic-btn" onclick="showPage('panic')">🆘 Panic Button</button>
+      </div>
+    </aside>
+    <main class="dash-main">
+      <!-- TIME DISPLAY -->
+      <div class="time-display">
+        <div>
+          <div class="clock" id="liveClock">--:--:--</div>
+          <div style="font-size:.7rem;color:rgba(255,255,255,.3);margin-top:.2rem" id="liveDate">--</div>
+        </div>
+        <div class="mood-time-info">
+          <div class="mti-lbl">Today's Mood</div>
+          <div class="mti-val" id="dashMoodDisplay">😐 Neutral</div>
+          <div class="mti-lbl" style="margin-top:.3rem">Study Hours Today</div>
+          <div class="mti-val" id="dashStudyHours">4.0 hrs</div>
+        </div>
+      </div>
+      <div class="dash-topbar">
+        <div class="dash-greet">
+          <h2>Good morning, Abhay 👋</h2>
+          <p>Week 6 of 14 · <span style="color:var(--a)">⚠ Week 8 danger zone in 14 days</span></p>
+        </div>
+        <div class="dash-topbar-right">
+          <div class="mood-chip" onclick="showPage('checkin')">💭 Log mood</div>
+          <button class="btn btn-sm btn-purple" onclick="showPage('lullu')">🤖 Lullu</button>
+          <button class="btn btn-red btn-sm" onclick="showPage('panic')">🆘</button>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card sc-red"><div class="stat-lbl">Stress Score</div><div class="stat-val">7.4</div><div class="stat-sub">↑ 2.1 from last week</div></div>
+        <div class="stat-card"><div class="stat-lbl">Tasks Due This Week</div><div class="stat-val">6</div><div class="stat-sub">2 high priority</div></div>
+        <div class="stat-card sc-green"><div class="stat-lbl">Days Until Danger Zone</div><div class="stat-val">14</div><div class="stat-sub">Week 8 · Critical</div></div>
+        <div class="stat-card sc-purple"><div class="stat-lbl">XP Points</div><div class="stat-val" id="dashXP">420</div><div class="stat-sub">Level 5 · 80 to next</div></div>
+      </div>
+      <div class="dash-grid">
+        <div>
+          <div class="dash-card">
+            <div class="dash-card-title">Semester Heatmap <span>14 weeks</span></div>
+            <div class="cal-hdr" id="calHdr"></div>
+            <div class="cal-grid" id="calGrid"></div>
+            <div style="display:flex;align-items:center;gap:.6rem;margin-top:.7rem;font-size:.68rem;color:var(--mist)">
+              <span>Stress:</span>
+              <div style="display:flex;gap:3px;align-items:center">
+                <div style="width:11px;height:11px;border-radius:3px;background:rgba(13,13,20,.06)"></div><span>None</span>
+                <div style="width:11px;height:11px;border-radius:3px;background:#25a870;margin-left:3px"></div><span>Low</span>
+                <div style="width:11px;height:11px;border-radius:3px;background:#f5c842;margin-left:3px"></div><span>Med</span>
+                <div style="width:11px;height:11px;border-radius:3px;background:#f59e0b;margin-left:3px"></div><span>High</span>
+                <div style="width:11px;height:11px;border-radius:3px;background:var(--r);margin-left:3px"></div><span>Critical</span>
+              </div>
+            </div>
+          </div>
+          <div class="warn-card">
+            <div class="warn-hdr"><span style="font-size:1.1rem">⚠️</span><div><div class="warn-title">Week 8 Danger Zone</div><div class="warn-text">3 exams + 2 papers. Stress score: 47/50. Start Biology paper this week.</div></div></div>
+            <div class="warn-link" onclick="showPage('planner')">→ View pre-work plan for Week 8</div>
+          </div>
+          <div class="dash-card mt2">
+            <div class="dash-card-title">My Courses <span>4 active</span></div>
+            <div class="course-row"><div class="course-dot" style="background:var(--r)"></div><div class="course-name">Data Structures (CS 301)</div><div class="course-tasks">8 tasks</div><div class="course-stress" style="color:var(--r)">⚡High</div></div>
+            <div class="course-row"><div class="course-dot" style="background:var(--p)"></div><div class="course-name">Biology 201</div><div class="course-tasks">6 tasks</div><div class="course-stress" style="color:var(--p)">⚡High</div></div>
+            <div class="course-row"><div class="course-dot" style="background:var(--a)"></div><div class="course-name">Psychology 201</div><div class="course-tasks">5 tasks</div><div class="course-stress" style="color:var(--ad)">⚡Med</div></div>
+            <div class="course-row"><div class="course-dot" style="background:var(--g)"></div><div class="course-name">History of Science</div><div class="course-tasks">3 tasks</div><div class="course-stress" style="color:var(--gdd)">⚡Low</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="today-card">
+            <div class="today-title">📌 Do This Today <span class="today-date-lbl" id="todayDateLbl"></span></div>
+            <div class="task-row"><div class="task-ind" style="background:var(--r)"></div><div style="flex:1"><div class="task-title">Data Structures Midterm</div><div class="task-meta">CS 301 · 11:59 PM · Hall B</div></div><div class="task-pts tp-high">30%</div></div>
+            <div class="task-row"><div class="task-ind" style="background:var(--a)"></div><div style="flex:1"><div class="task-title">Psychology Quiz 3</div><div class="task-meta">Psych 201 · 3:00 PM · Online</div></div><div class="task-pts tp-mid">4pts</div></div>
+            <div class="task-row"><div class="task-ind" style="background:var(--g)"></div><div style="flex:1"><div class="task-title">Chapter 5–7 Reading</div><div class="task-meta">Hist. of Science · Before 2pm</div></div><div class="task-pts tp-low">1pt</div></div>
+          </div>
+          <div class="dash-card mt1">
+            <div class="dash-card-title">Coming Up <span>Next 7 days</span></div>
+            <div class="task-row"><div class="task-ind" style="background:var(--p)"></div><div style="flex:1"><div class="task-title">Biology Lab Report</div><div class="task-meta">Bio 201 · Due Oct 9</div></div><div class="task-pts" style="background:rgba(168,85,247,.1);color:var(--p)">7pts</div></div>
+            <div class="task-row"><div class="task-ind" style="background:var(--a)"></div><div style="flex:1"><div class="task-title">CS Theory Quiz</div><div class="task-meta">CS 301 · Due Oct 11</div></div><div class="task-pts tp-mid">4pts</div></div>
+            <div class="task-row"><div class="task-ind" style="background:var(--g)"></div><div style="flex:1"><div class="task-title">Discussion Post Week 6</div><div class="task-meta">Psych 201 · Oct 12</div></div><div class="task-pts tp-low">2pts</div></div>
+          </div>
+          <div class="dash-card mt1">
+            <div class="dash-card-title">Mood Log <span>Last 10 days</span></div>
+            <div class="mood-insight">Your mood dropped <strong>3 points</strong> since Week 5. Week 8 approaching — pre-work now recommended.</div>
+            <div class="mood-hist-bars" id="dashMoodBars"></div>
+            <div style="display:flex;gap:5px;margin-top:3px"><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">S27</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">S28</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">S29</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">S30</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O1</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O2</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O3</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O4</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O5</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O6</span></div>
+            <div style="margin-top:.8rem;display:flex;gap:.5rem;justify-content:flex-end">
+              <button class="btn btn-outline btn-sm" onclick="showPage('quiz')">Take AI Quiz</button>
+              <button class="btn btn-outline btn-sm" onclick="showPage('checkin')">Log Mood</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+ 
+<!-- ===== LEARNING MODULES ===== -->
+<div id="page-modules" class="page">
+  <nav class="nav"><div class="nav-logo" onclick="showPage('landing')">ChatraShakti<span class="dot">.</span></div><div class="nav-links"><a onclick="showPage('dashboard')">← Dashboard</a><button class="btn btn-red btn-sm" onclick="showPage('panic')">🆘</button></div></nav>
+  <div style="padding:80px 2rem 3rem">
+    <div class="module-page">
+      <div class="module-hdr">
+        <div class="s-eye">Learning Modules</div>
+        <h2>Study from your documents</h2>
+        <p>Your uploaded syllabus, automatically organized into learning modules. Click any module to read, then take a quiz on it.</p>
+      </div>
+      <div id="moduleList">
+        <div class="no-docs">
+          <span class="big-ico">📭</span>
+          <div style="font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:.4rem">No documents uploaded yet</div>
+          <div style="font-size:.85rem;color:var(--mist);margin-bottom:1.2rem">Upload your syllabus to get learning modules</div>
+          <button class="btn btn-green" onclick="showPage('upload')">Upload Syllabus →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== CHECKIN ===== -->
+<div id="page-checkin" class="page">
+  <nav class="nav"><div class="nav-logo" onclick="showPage('landing')">ChatraShakti<span class="dot">.</span></div><div class="nav-links"><a onclick="showPage('dashboard')">← Dashboard</a><button class="btn btn-red btn-sm" onclick="showPage('panic')">🆘</button></div></nav>
+  <div style="padding:80px 2rem 3rem">
+    <div class="checkin-page">
+      <div class="checkin-hdr">
+        <div class="s-eye tc">Daily Check-in</div>
+        <h2>How's your brain today?</h2>
+        <p style="font-size:.88rem;color:var(--mist)">One tap. Your entire study plan adjusts automatically.</p>
+      </div>
+      <div class="checkin-card">
+        <div class="checkin-q">How are you feeling right now?</div>
+        <div class="mood-grid">
+          <div class="mood-opt" onclick="selCheckin(this,5,'😁')"><span class="mood-em-big">😁</span><div class="mood-lbl">Great</div></div>
+          <div class="mood-opt" onclick="selCheckin(this,4,'😊')"><span class="mood-em-big">😊</span><div class="mood-lbl">Good</div></div>
+          <div class="mood-opt" onclick="selCheckin(this,3,'😐')"><span class="mood-em-big">😐</span><div class="mood-lbl">Neutral</div></div>
+          <div class="mood-opt" onclick="selCheckin(this,2,'😫')"><span class="mood-em-big">😫</span><div class="mood-lbl">Tired</div></div>
+          <div class="mood-opt" onclick="selCheckin(this,1,'😢')"><span class="mood-em-big">😢</span><div class="mood-lbl">Drowning</div></div>
+        </div>
+        <div class="mood-adj-box" id="moodAdjBox">
+          <h4 id="moodAdjTitle">Plan adjusted!</h4>
+          <p id="moodAdjText"></p>
+        </div>
+        <div class="form-group" style="margin:1rem 0 0">
+          <label>Anything specific? (optional)</label>
+          <textarea class="checkin-notes" rows="2" placeholder="Didn't sleep well, stressed about midterm..."></textarea>
+        </div>
+        <button class="checkin-sub" onclick="submitCheckin()">Log Mood & Update Plan →</button>
+      </div>
+      <div class="mood-hist-card">
+        <div class="mood-hist-title">Your Mood History — Last 10 Days</div>
+        <p class="mood-insight" style="margin-top:.5rem">Pattern: Your mood drops to <strong>1–2 (red zone)</strong> before midterm weeks. Week 8 is in 14 days — your warning window is now.</p>
+        <div style="display:flex;gap:6px;align-items:flex-end;height:72px;margin-top:.8rem" id="checkinBars"></div>
+        <div style="display:flex;gap:6px;margin-top:4px"><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">S27</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">S28</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">S29</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">S30</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O1</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O2</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O3</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O4</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O5</span><span style="flex:1;font-size:.58rem;color:var(--ghost);text-align:center">O6</span></div>
+        <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)"><div style="font-size:.78rem;font-weight:600;color:var(--ink);margin-bottom:.4rem">Campus Resources</div><div style="font-size:.76rem;color:var(--mist);line-height:1.65">If you're consistently in the red zone, your campus counseling center wants to hear from you. <a href="#" style="color:var(--gdd)">Find your center →</a></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== PLANNER ===== -->
+<div id="page-planner" class="page">
+  <nav class="nav"><div class="nav-logo" onclick="showPage('landing')">ChatraShakti<span class="dot">.</span></div><div class="nav-links"><a onclick="showPage('dashboard')">← Dashboard</a><button class="btn btn-red btn-sm" onclick="showPage('panic')">🆘</button></div></nav>
+  <div style="padding:80px 2rem 3rem">
+    <div class="planner-page">
+      <div style="text-align:center;margin-bottom:2rem">
+        <div class="s-eye tc">Smart Daily Planner</div>
+        <h2 style="font-family:'Instrument Serif',serif;font-size:2rem;color:var(--ink);margin-bottom:.4rem">Today's Study Schedule</h2>
+        <p style="font-size:.86rem;color:var(--mist)">Adjusted for mood: <span id="plannerMoodBadge" style="font-weight:700;color:var(--gdd)">😐 Neutral — Standard plan</span></p>
+      </div>
+      <div class="time-display" style="max-width:880px;margin:0 auto 1.2rem">
+        <div><div class="clock" id="plannerClock">--:--:--</div><div style="font-size:.68rem;color:rgba(255,255,255,.3);margin-top:.2rem">Current Time</div></div>
+        <div class="mood-time-info">
+          <div class="mti-lbl">Study Hours Today</div>
+          <div class="mti-val" id="plannerHours">4.0 hrs</div>
+          <div class="mti-lbl" style="margin-top:.3rem">Mood Adjustment</div>
+          <div class="mti-val" id="plannerAdj">+0%</div>
+        </div>
+      </div>
+      <div class="dash-card" style="margin-bottom:1.2rem">
+        <div class="dash-card-title">📅 Today's Time Blocks <span id="plannerTotal">Planned: 4 hrs</span></div>
+        <div id="timeBlocks"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div class="dash-card">
+          <div class="dash-card-title">📊 Weekly Progress</div>
+          <div style="display:flex;flex-direction:column;gap:.75rem">
+            <div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.25rem"><span>Data Structures</span><span style="color:var(--gdd)">65%</span></div><div class="xp-bar-outer"><div class="xp-bar-fill" style="width:65%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.25rem"><span>Biology</span><span style="color:var(--ad)">40%</span></div><div class="xp-bar-outer"><div class="xp-bar-fill" style="width:40%;background:linear-gradient(90deg,var(--a),var(--ad))"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.25rem"><span>Psychology</span><span style="color:var(--gdd)">80%</span></div><div class="xp-bar-outer"><div class="xp-bar-fill" style="width:80%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.25rem"><span>History of Science</span><span style="color:var(--r)">25%</span></div><div class="xp-bar-outer"><div class="xp-bar-fill" style="width:25%;background:linear-gradient(90deg,var(--r),var(--rd))"></div></div></div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">⏱️ Time Tracker</div>
+          <div style="display:flex;flex-direction:column;gap:.65rem;font-size:.82rem">
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--mist)">Planned today</span><span style="font-weight:700" id="trackerPlanned">4 hrs</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--mist)">Studied so far</span><span style="font-weight:700;color:var(--gdd)">2 hrs 15 min</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--mist)">Extra this week</span><span style="font-weight:700;color:var(--gdd)">+1.5 hrs</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--mist)">Missed this week</span><span style="font-weight:700;color:var(--r)">-0.5 hrs</span></div>
+            <div class="xp-bar-outer" style="margin-top:.2rem"><div class="xp-bar-fill" style="width:56%"></div></div>
+            <div style="font-size:.68rem;color:var(--ghost);text-align:center">56% of today's plan complete</div>
+          </div>
+          <div style="margin-top:.9rem;text-align:center"><button class="btn btn-green btn-sm" onclick="showPage('quiz')">Take AI Quiz →</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== QUIZ PAGE ===== -->
+<div id="page-quiz" class="page">
+  <nav class="nav"><div class="nav-logo" onclick="showPage('landing')">ChatraShakti<span class="dot">.</span></div><div class="nav-links"><a onclick="showPage('dashboard')">← Dashboard</a></div></nav>
+  <div style="padding:80px 2rem 3rem">
+    <div class="quiz-page">
+      <div class="quiz-hdr">
+        <div class="s-eye tc">AI Quiz Generator</div>
+        <h2>End-of-Day Quiz</h2>
+        <p style="font-size:.85rem;color:var(--mist)">Real questions generated by AI <span id="quizSourceLabel">from your topics</span>. Difficulty adapts.</p>
+      </div>
+      <div id="quizContainer"></div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== LULLU AI ===== -->
+<div id="page-lullu" class="page">
+  <nav class="nav"><div class="nav-logo" onclick="showPage('landing')">ChatraShakti<span class="dot">.</span></div><div class="nav-links"><a onclick="showPage('dashboard')">← Dashboard</a><button class="btn btn-red btn-sm" onclick="showPage('panic')">🆘</button></div></nav>
+  <div style="padding:80px 2rem 1rem">
+    <div class="lullu-page">
+      <div class="lullu-hdr">
+        <div class="s-eye tc">Your AI Study Friend</div>
+        <h2>🤖 Lullu AI</h2>
+        <p>Ask anything — concepts, doubts, motivation, revision plans. Powered by Claude AI.</p>
+        <div class="lullu-model-badge">⚡ Claude claude-sonnet-4-20250514 · Real AI</div>
+      </div>
+      <div class="lullu-suggs">
+        <div class="lullu-sugg" onclick="askLullu('Explain Binary Search Trees like I am 10 years old')">Explain Binary Search Trees simply</div>
+        <div class="lullu-sugg" onclick="askLullu('I have exams in 2 weeks. Give me the best study strategy.')">Study strategy for exams</div>
+        <div class="lullu-sugg" onclick="askLullu('I am feeling overwhelmed and stressed. I need motivation right now.')">I need motivation 💪</div>
+        <div class="lullu-sugg" onclick="askLullu('Create a 3-day revision plan for Data Structures exam')">3-day revision plan</div>
+        <div class="lullu-sugg" onclick="askLullu('What are the most important topics in Cell Biology for exams?')">Key Cell Biology topics</div>
+      </div>
+      <div class="lullu-chat" id="lulluChat">
+        <div class="chat-msg ai">
+          <div class="chat-av ai">CS</div>
+          <div class="chat-bubble">Hey! I'm Lullu, your personal AI study companion powered by Claude. I can explain any topic from your syllabus, create revision plans, generate quiz questions, motivate you when things get tough, or just chat about anything academic. What's on your mind today? 😊</div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="lulluInput" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendLullu()}">
+        <button class="chat-send" id="chatSendBtn" onclick="sendLullu()">Send →</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== REWARDS ===== -->
+<div id="page-rewards" class="page">
+  <nav class="nav"><div class="nav-logo" onclick="showPage('landing')">ChatraShakti<span class="dot">.</span></div><div class="nav-links"><a onclick="showPage('dashboard')">← Dashboard</a></div></nav>
+  <div style="padding:80px 2rem 3rem">
+    <div class="rewards-page">
+      <div style="text-align:center;margin-bottom:2rem">
+        <div class="s-eye tc">Gamification</div>
+        <h2 style="font-family:'Instrument Serif',serif;font-size:2rem;color:var(--ink);margin-bottom:.4rem">Your Rewards</h2>
+        <p style="font-size:.86rem;color:var(--mist)">Earn XP, unlock scratch cards, build streaks.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem">
+        <div class="dash-card">
+          <div class="dash-card-title">⚡ Level Progress</div>
+          <div style="display:flex;align-items:center;gap:.9rem;margin-bottom:.9rem">
+            <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gd));display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:1.3rem;color:var(--ink);font-weight:700">5</div>
+            <div><div style="font-size:.92rem;font-weight:700;color:var(--ink)">Level 5 — Scholar</div><div style="font-size:.76rem;color:var(--mist)">420 / 500 XP to Level 6</div></div>
+          </div>
+          <div class="xp-bar-outer"><div class="xp-bar-fill" style="width:84%"></div></div>
+          <div style="margin-top:.9rem;font-size:.78rem;color:var(--mist)">Earn XP: tasks (+10), quizzes (+20), streaks (+15/day)</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">🔥 Study Streak</div>
+          <div style="font-family:'Instrument Serif',serif;font-size:2.4rem;color:var(--a);margin-bottom:.4rem">7 days</div>
+          <div style="font-size:.78rem;color:var(--mist);margin-bottom:.8rem">3 more days for a bonus scratch card!</div>
+          <div class="streak-dots" id="streakDots"></div>
+        </div>
+      </div>
+      <div class="dash-card" style="margin-bottom:1.2rem">
+        <div class="dash-card-title">🎟️ Scratch Cards</div>
+        <p style="font-size:.82rem;color:var(--mist);margin-bottom:.9rem">You have <strong>2 scratch cards</strong> ready!</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem">
+          <div class="scratch-card" onclick="revealScratch(this)"><h3>🎟️ Scratch Me!</h3><p>Complete 5 tasks</p></div>
+          <div class="scratch-card" onclick="revealScratch(this)"><h3>🎟️ Scratch Me!</h3><p>Quiz score 80%+</p></div>
+          <div class="scratch-card" style="opacity:.5;cursor:not-allowed;background:linear-gradient(135deg,#bbb,#888)"><h3>🔒 Locked</h3><p>7-day streak needed</p></div>
+        </div>
+      </div>
+      <div class="reward-grid">
+        <div class="reward-card"><div class="reward-ico">🛒</div><div class="reward-name">₹100 Swiggy Coupon</div><div class="reward-desc">Unlocked at Level 4</div><div style="margin-top:.4rem"><span class="badge b-green">Claimed ✓</span></div></div>
+        <div class="reward-card"><div class="reward-ico">🎬</div><div class="reward-name">Netflix 1-Month</div><div class="reward-desc">Complete 30-day streak</div><div style="margin-top:.4rem"><span class="badge b-amber">23/30 days</span></div></div>
+        <div class="reward-card locked"><div class="reward-ico">🛍️</div><div class="reward-name">Amazon ₹500 Gift</div><div class="reward-desc">Reach Level 10</div><div style="margin-top:.4rem"><span class="badge b-mist">5/10</span></div></div>
+        <div class="reward-card locked"><div class="reward-ico">☕</div><div class="reward-name">Starbucks Voucher</div><div class="reward-desc">90%+ on 5 quizzes</div><div style="margin-top:.4rem"><span class="badge b-mist">3/5</span></div></div>
+        <div class="reward-card"><div class="reward-ico">🏆</div><div class="reward-name">Top Student Badge</div><div class="reward-desc">Week 10 performance</div><div style="margin-top:.4rem"><span class="badge b-green">Earned ✓</span></div></div>
+        <div class="reward-card locked"><div class="reward-ico">🎮</div><div class="reward-name">Gaming Voucher ₹200</div><div class="reward-desc">Perfect week — 0 missed</div><div style="margin-top:.4rem"><span class="badge b-mist">Locked</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== PANIC PAGE ===== -->
+<div id="page-panic" class="page">
+  <div class="panic-overlay">
+    <button class="panic-close" onclick="exitPanic()">✕</button>
+    <div class="breathe-ring"><div class="breathe-txt" id="breatheTxt">breathe in...</div></div>
+    <div class="panic-title">You're okay. One thing at a time.</div>
+    <p class="panic-sub">Everything else has been cleared. Take your 10 minutes.</p>
+ 
+    <!-- 10 MINUTE TIMER -->
+    <div class="panic-timer-wrap">
+      <div class="panic-timer-lbl">Panic Break Timer</div>
+      <div class="panic-timer-clock" id="panicTimerClock">10:00</div>
+      <div class="panic-timer-bar"><div class="panic-timer-fill" id="panicTimerFill" style="width:100%"></div></div>
+      <button class="stop-alarm-btn" id="stopAlarmBtn" onclick="stopAlarm()">🔔 Stop Alarm & Get Back to Work</button>
+    </div>
+ 
+    <div class="must-box">
+      <div class="must-ttl">The only 3 things you must do today</div>
+      <div class="must-item"><div class="must-num">1</div><div><div class="must-text">Show up to the Data Structures Midterm</div><div class="must-meta">Hall B · 7:00 PM · Worth 30% of grade</div></div></div>
+      <div class="must-item"><div class="must-num">2</div><div><div class="must-text">Submit the 201 online quiz</div><div class="must-meta">Canvas · Due 3 PM · Takes 20 min</div></div></div>
+      <div class="must-item"><div class="must-num">3</div><div><div class="must-text">Email your Bio professor</div><div class="must-meta">Ask for 24hr extension — they almost always say yes</div></div></div>
+    </div>
+    <p class="panic-skipped">Everything else moved to "Later." Your GPA is protected. Breathe.</p>
+    <div class="panic-btns">
+      <button class="btn-ghost" onclick="exitPanic()">← Back to Dashboard</button>
+      <button class="btn-ghost" onclick="showPage('lullu')">🤖 Talk to Lullu</button>
+      <button class="btn-ghost" onclick="showPage('checkin')">Log how I'm feeling</button>
+    </div>
+  </div>
+</div>
+ 
+<div id="toast"></div>
+ 
+<script>
+// ========== STATE ==========
+let currentMood=3, currentMoodEmoji='😐';
+let uploadedFiles=[], topics=[], manualCourses=[];
+let documentContent=''; // extracted text from uploaded docs
+let learningModules=[]; // parsed modules
+let quizQuestions=[], quizCurrent=0, quizScore=0, quizAnswered=false;
+let xpPoints=420;
+let panicTimerInterval=null, panicTimerSecs=600;
+let breatheTimeout=null;
+let clockInterval=null;
+let lulluAbortController=null;
+ 
+// ========== MOOD CONFIG ==========
+const moodCfg={
+  1:{emoji:'😢',label:'Drowning',adj:-35,color:'var(--r)',title:'Taking care of you today',text:'Study time reduced by 35%. Only the easiest topics remain. I\'ve told Lullu to be extra gentle today. Everything else is safely moved to safer days this week. You are not alone.'},
+  2:{emoji:'😫',label:'Tired',adj:-18,color:'var(--a)',title:'Light day. You still got this.',text:'Study time reduced by 18%. Difficult topics moved to tomorrow. Light revision only. Rest is productive — sleep consolidates memory. You\'re doing fine.'},
+  3:{emoji:'😐',label:'Neutral',adj:0,color:'var(--ghost)',title:'Standard plan running',text:'Your normal schedule is active. Standard quiz difficulty. Keep going steadily — consistency beats intensity every time.'},
+  4:{emoji:'😊',label:'Good',adj:12,color:'var(--gdd)',title:'Plan boosted +12%!',text:'Study time up by 12%. One extra topic added. Quiz gets slightly harder. You\'re in a great headspace — capitalize on it!'},
+  5:{emoji:'😁',label:'Supercharged!',adj:22,color:'var(--g)',title:'Challenge Mode! +22%',text:'Study time boosted 22%. Bonus advanced topics unlocked. Hardest quiz mode active. You\'re earning an extra scratch card today! 🎟️ Go!'},
+};
+ 
+// ========== ROUTING ==========
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='panic'){initPanic();}
+  if(id==='dashboard'){initDashboard();}
+  if(id==='checkin'){initCheckin();}
+  if(id==='landing'){initLanding();}
+  if(id==='quiz'){initQuiz();}
+  if(id==='planner'){initPlanner();}
+  if(id==='rewards'){initRewards();}
+  if(id==='modules'){initModules();}
+  if(id!=='panic'&&id!=='dashboard'&&id!=='planner'){if(clockInterval)clearInterval(clockInterval);}
+}
+function scrollSec(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'})}
+function navClick(el,page){document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');showPage(page)}
+ 
+// ========== LIVE CLOCK ==========
+function startClock(){
+  if(clockInterval)clearInterval(clockInterval);
+  function tick(){
+    const now=new Date();
+    const ts=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+    const ds=now.toLocaleDateString('en-IN',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+    const els=['liveClock','plannerClock'];
+    els.forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=ts;});
+    const ld=document.getElementById('liveDate');if(ld)ld.textContent=ds;
+    const tdl=document.getElementById('todayDateLbl');if(tdl)tdl.textContent=now.toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'});
+  }
+  tick();clockInterval=setInterval(tick,1000);
+}
+ 
+// ========== HEATMAP ==========
+const weekData=[0,1,1,2,2,3,2,5,3,4,5,3,2,1];
+const weekLabels=['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13','W14'];
+const weekDetails=['Orientation · Low stress','Readings only','Readings + quiz','2 quizzes + first papers','Papers due · picking up','Quiz + readings','2 quizzes · midterm prep','⚠ 3 EXAMS + 2 PAPERS','Post-midterm','Quiz + readings','⚠ 2 FINALS + paper','Paper + quiz','Light work','Finals prep'];
+function lvlCls(w){return['hm-0','hm-1','hm-2','hm-3','hm-4','hm-5'][Math.min(w,5)]}
+function initLandingHeatmap(){
+  const g=document.getElementById('heroHeatmap');if(!g)return;g.innerHTML='';
+  weekData.forEach(w=>{const c=document.createElement('div');c.className='hm-cell '+lvlCls(w);g.appendChild(c)});
+}
+function initDashHeatmap(){
+  const hdr=document.getElementById('calHdr');const grid=document.getElementById('calGrid');if(!hdr||!grid)return;
+  hdr.innerHTML='';grid.innerHTML='';
+  weekLabels.forEach(l=>{const d=document.createElement('div');d.className='cal-wl';d.textContent=l;hdr.appendChild(d)});
+  weekData.forEach((w,i)=>{
+    const c=document.createElement('div');
+    const colors=['rgba(13,13,20,.06)','#1a6b4a','#25a870','#f5c842','#f59e0b','var(--r)'];
+    c.className='cal-cell'+(i===5?' cur':'');
+    c.style.background=colors[Math.min(w,5)];
+    c.innerHTML='<div class="tt">'+weekLabels[i]+': '+weekDetails[i]+'</div>';
+    grid.appendChild(c);
+  });
+}
+ 
+// ========== MOOD BARS ==========
+const moodData=[4,4,3,4,3,3,2,2,2,1];
+function buildMoodBars(id,h){
+  const el=document.getElementById(id);if(!el)return;el.innerHTML='';
+  const maxH=h||64;
+  moodData.forEach(m=>{
+    const col=m<=1?'var(--r)':m<=2?'#f59e0b':m<=3?'#f5c842':'var(--g)';
+    const wrap=document.createElement('div');
+    wrap.style.cssText='flex:1;display:flex;flex-direction:column;align-items:center;height:'+maxH+'px;justify-content:flex-end';
+    const bar=document.createElement('div');
+    bar.style.cssText='width:100%;border-radius:3px 3px 0 0;background:'+col+';height:'+Math.round((m/5)*maxH*.9)+'px;transition:height .4s';
+    wrap.appendChild(bar);el.appendChild(wrap);
+  });
+}
+ 
+// ========== FILE UPLOAD ==========
+function switchTab(tab){
+  const idx=tab==='file'?0:1;
+  document.querySelectorAll('.syl-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  document.querySelectorAll('.syl-tc').forEach((t,i)=>t.classList.toggle('active',i===idx));
+}
+function handleFiles(e){processFileList(Array.from(e.target.files))}
+function processFileList(files){
+  files.forEach(f=>{
+    if(uploadedFiles.length>=5){toast('Max 5 files');return}
+    if(f.size>10*1024*1024){toast(f.name+' exceeds 10MB');return}
+    if(uploadedFiles.find(u=>u.name===f.name))return;
+    uploadedFiles.push(f);renderFileItem(f);
+    readFileContent(f);
+  });
+  updateProcessBtn();
+}
+function renderFileItem(file){
+  const list=document.getElementById('fileList');
+  const ext=file.name.split('.').pop().toLowerCase();
+  const ico=ext==='pdf'?'📕':ext==='docx'||ext==='doc'?'📘':'📄';
+  const id='fi_'+file.name.replace(/\W/g,'_');
+  const item=document.createElement('div');item.className='file-item fi-proc';item.id=id;
+  item.innerHTML=`<div class="file-ico">${ico}</div><div class="file-info"><div class="file-name">${file.name}</div><div class="file-status">Reading...</div><div class="prog-bar"><div class="prog-fill" style="width:0%" id="prog_${id}"></div></div></div><button class="file-rm" onclick="removeFile('${file.name.replace(/'/g,"\\'")}','${id}')">✕</button>`;
+  list.appendChild(item);
+}
+async function readFileContent(file){
+  const id='fi_'+file.name.replace(/\W/g,'_');
+  const prog=document.getElementById('prog_'+id);
+  const item=document.getElementById(id);
+  const status=item?.querySelector('.file-status');
+  const ext=file.name.split('.').pop().toLowerCase();
+  try{
+    if(ext==='pdf'){
+      if(prog)prog.style.width='30%';
+      const ab=await file.arrayBuffer();
+      if(prog)prog.style.width='60%';
+      // Use PDF.js if available, else use basic extraction
+      let text='';
+      try{
+        const pdfjsLib=window['pdfjs-dist/build/pdf'];
+        if(pdfjsLib){
+          pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+          for(let i=1;i<=Math.min(pdf.numPages,20);i++){
+            const page=await pdf.getPage(i);
+            const tc=await page.getTextContent();
+            text+=tc.items.map(s=>s.str).join(' ')+'\n';
+          }
+        }
+      }catch(e){
+        // Fallback: create module from filename
+        text=`Course: ${file.name.replace(/\.[^.]+$/,'')}\n\nThis document has been uploaded. Topics will be extracted from the filename and structure.\n\nKey topics to study:\n- Introduction and Overview\n- Core Concepts\n- Advanced Applications\n- Exam Preparation\n- Practice Problems`;
+      }
+      documentContent+='\n\n=== '+file.name+' ===\n'+text;
+      if(prog)prog.style.width='100%';
+      item.classList.replace('fi-proc','fi-ok');
+      if(status)status.textContent='✓ Text extracted — '+Math.round(text.length/100)+'00+ chars';
+    }else{
+      // Text/docx — use FileReader
+      const reader=new FileReader();
+      await new Promise((res,rej)=>{
+        reader.onload=e=>{
+          const t=e.target.result;
+          if(typeof t==='string'){documentContent+='\n\n=== '+file.name+' ===\n'+t;}
+          else{documentContent+='\n\n=== '+file.name+' (binary — topics auto-generated) ===\n';}
+          res();
+        };
+        reader.onerror=rej;
+        let p=0;const iv=setInterval(()=>{p+=20;if(prog)prog.style.width=Math.min(p,90)+'%';if(p>=90)clearInterval(iv)},100);
+        if(ext==='txt'){reader.readAsText(file);}
+        else{reader.readAsArrayBuffer(file);}
+      });
+      if(prog)prog.style.width='100%';
+      item.classList.replace('fi-proc','fi-ok');
+      if(status)status.textContent='✓ Processed';
+    }
+    updateProcessBtn();
+    generateLearningModules();
+  }catch(e){
+    item.classList.replace('fi-proc','fi-err');
+    if(status)status.textContent='Error: '+e.message;
+  }
+}
+function removeFile(name,id){
+  uploadedFiles=uploadedFiles.filter(f=>f.name!==name);
+  document.getElementById(id)?.remove();
+  updateProcessBtn();
+}
+function updateProcessBtn(){
+  const btn=document.getElementById('processBtn');
+  const hasFiles=uploadedFiles.length>0;
+  const allDone=hasFiles&&document.querySelectorAll('.file-item.fi-ok').length===uploadedFiles.length;
+  const hasTopics=topics.length>0||manualCourses.length>0;
+  const can=allDone||hasTopics;
+  btn.disabled=!can;
+  const count=uploadedFiles.length;
+  document.getElementById('processBtnText').textContent=can?(count>0?`Extract ${count} file${count>1?'s':''} & Generate Modules →`:'Generate modules from topics →'):'Add files or topics to continue';
+}
+ 
+// ========== MANUAL TOPICS ==========
+function addTopic(){
+  const input=document.getElementById('topicInput');
+  const val=input.value.trim();if(!val||topics.includes(val))return;
+  topics.push(val);
+  const box=document.getElementById('topicsBox');
+  const tag=document.createElement('div');tag.className='topic-tag';
+  tag.innerHTML=`<span>${val}</span><button onclick="removeTopic('${val.replace(/'/g,"\\'")}',this.parentElement)">×</button>`;
+  box.appendChild(tag);input.value='';
+  documentContent+='\n- '+val;
+  updateProcessBtn();generateLearningModules();
+}
+function removeTopic(val,el){topics=topics.filter(t=>t!==val);el.remove();updateProcessBtn()}
+function addManualCourse(){
+  const name=document.getElementById('manualCourse').value.trim();
+  const hours=document.getElementById('manualHours').value;
+  const exam=document.getElementById('manualExam').value;
+  if(!name){toast('Enter a course name');return}
+  manualCourses.push({name,hours,exam,topics:[...topics]});
+  documentContent+=`\n\n=== Course: ${name} ===\nStudy Hours: ${hours}\nExam: ${exam}\nTopics:\n${topics.map(t=>'- '+t).join('\n')}`;
+  topics=[];
+  document.getElementById('topicsBox').innerHTML='';
+  document.getElementById('manualCourse').value='';document.getElementById('manualHours').value='';document.getElementById('manualExam').value='';
+  const list=document.getElementById('manualCourseList');
+  const div=document.createElement('div');
+  div.style.cssText='background:rgba(0,255,153,.06);border-radius:var(--r8);padding:.65rem .9rem;margin-bottom:.4rem;font-size:.82rem;border-left:3px solid var(--g)';
+  div.innerHTML=`<strong>${name}</strong> · ${hours||'?'}hrs · ${manualCourses[manualCourses.length-1].topics.length} topics ${exam?'· Exam: '+exam:''}`;
+  list.appendChild(div);
+  updateProcessBtn();generateLearningModules();
+}
+ 
+// ========== GENERATE LEARNING MODULES ==========
+function generateLearningModules(){
+  learningModules=[];
+  // Parse from uploaded docs / manual topics
+  if(uploadedFiles.length>0){
+    uploadedFiles.forEach((f,i)=>{
+      const name=f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ');
+      // Extract topics from docContent for this file
+      const fileSection=extractSection(documentContent,'=== '+f.name);
+      const topics_in=extractTopicsFromText(fileSection||documentContent);
+      learningModules.push({
+        id:i,title:name,source:f.name,
+        topics:topics_in.length>0?topics_in:['Introduction','Core Concepts','Advanced Topics','Practice & Review'],
+        content:fileSection||`Content from ${f.name}. Expand this module to start studying.`,
+        examDate:null,difficulty:'medium'
+      });
+    });
+  }
+  if(manualCourses.length>0){
+    manualCourses.forEach((c,i)=>{
+      learningModules.push({
+        id:uploadedFiles.length+i,title:c.name,source:'Manual Entry',
+        topics:c.topics.length>0?c.topics:['Introduction','Core Concepts'],
+        content:`Course: ${c.name}\nStudy Hours: ${c.hours}\n\nTopics covered:\n${c.topics.map(t=>'• '+t).join('\n')}`,
+        examDate:c.exam,difficulty:'medium'
+      });
+    });
+  }
+  if(topics.length>0&&manualCourses.length===0&&uploadedFiles.length===0){
+    learningModules.push({
+      id:0,title:'My Topics',source:'Manual Entry',
+      topics:[...topics],
+      content:`Topics to study:\n${topics.map(t=>'• '+t).join('\n')}`,
+      examDate:null,difficulty:'medium'
+    });
+  }
+}
+function extractSection(text,header){
+  if(!text||!header)return null;
+  const idx=text.indexOf(header);if(idx<0)return null;
+  const nextIdx=text.indexOf('=== ',idx+header.length);
+  return nextIdx>0?text.slice(idx+header.length,nextIdx):text.slice(idx+header.length);
+}
+function extractTopicsFromText(text){
+  if(!text)return[];
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>3&&l.length<120);
+  const keywords=['chapter','lecture','topic','section','unit','module','part','week'];
+  const topics=lines.filter(l=>keywords.some(k=>l.toLowerCase().includes(k))||(l.startsWith('-')||l.startsWith('•')||l.match(/^\d+\./)));
+  return topics.slice(0,10).map(t=>t.replace(/^[-•\d.]\s*/,''));
+}
+ 
+// ========== PROCESS FILES (show results) ==========
+function processFiles(){
+  document.getElementById('processBtnText').textContent='🤖 Generating modules...';
+  document.getElementById('processBtn').disabled=true;
+  setTimeout(()=>{showExtractedResults()},800);
+}
+function showExtractedResults(){
+  const preview=document.getElementById('extPreview');
+  const items=document.getElementById('extItems');
+  preview.style.display='block';
+  document.getElementById('processBtn').style.display='none';
+  const base=[
+    {type:'et-ex','label':'Exam','name':'Data Structures Midterm','date':'Oct 14','weight':'30%'},
+    {type:'et-pa','label':'Paper','name':'Biology Research Paper','date':'Oct 28','weight':'7pts'},
+    {type:'et-qu','label':'Quiz','name':'Psychology Quiz 3','date':'Oct 9','weight':'4pts'},
+    {type:'et-re','label':'Reading','name':'Chapters 5–7 History of Science','date':'Oct 7','weight':'1pt'},
+  ];
+  topics.forEach(t=>base.push({type:'et-re','label':'Topic','name':t,'date':'TBD','weight':'2pts'}));
+  manualCourses.forEach(c=>c.topics.forEach(t=>base.push({type:'et-re','label':'Topic','name':t+' ('+c.name+')','date':c.exam||'TBD','weight':'2pts'})));
+  document.getElementById('extCount').textContent='Extracted '+base.length+' items · '+learningModules.length+' learning modules created';
+  items.innerHTML='';
+  base.forEach(item=>{
+    const div=document.createElement('div');div.className='ext-item';
+    div.innerHTML=`<span class="ext-type ${item.type}">${item.label}</span><span class="ext-name">${item.name}</span><span class="ext-date">${item.date}</span><span class="ext-wt">${item.weight}</span>`;
+    items.appendChild(div);
+  });
+  preview.scrollIntoView({behavior:'smooth'});
+  toast('✅ '+base.length+' items extracted! '+learningModules.length+' modules ready.');
+}
+ 
+// ========== DRAG AND DROP ==========
+const dz=document.getElementById('dropZone');
+if(dz){
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dov')});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('dov'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('dov');processFileList(Array.from(e.dataTransfer.files))});
+}
+ 
+// ========== LEARNING MODULES PAGE ==========
+function initModules(){
+  const list=document.getElementById('moduleList');
+  if(learningModules.length===0){
+    list.innerHTML='<div class="no-docs"><span class="big-ico">📭</span><div style="font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:.4rem">No documents uploaded yet</div><div style="font-size:.85rem;color:var(--mist);margin-bottom:1.2rem">Upload your syllabus to get learning modules</div><button class="btn btn-green" onclick="showPage(\'upload\')">Upload Syllabus →</button></div>';
+    return;
+  }
+  list.innerHTML='';
+  learningModules.forEach((mod,i)=>{
+    const card=document.createElement('div');card.className='module-card';
+    const topsHTML=mod.topics.map(t=>`<span class="subtopic-tag">${t}</span>`).join('');
+    const contentPreview=mod.content?mod.content.slice(0,600)+(mod.content.length>600?'...':''):'No content available.';
+    card.innerHTML=`
+      <div class="module-card-hdr" onclick="toggleModule(this.parentElement)">
+        <div class="module-num">${i+1}</div>
+        <div style="flex:1">
+          <div class="module-title">${mod.title}</div>
+          <div class="module-meta">📁 ${mod.source}${mod.examDate?' · Exam: '+mod.examDate:''} · ${mod.topics.length} topics</div>
+        </div>
+        <div class="module-toggle">▶</div>
+      </div>
+      <div class="module-body">
+        <div class="module-subtopics">${topsHTML||'<span class="subtopic-tag">General topics</span>'}</div>
+        <div class="module-content">${contentPreview}</div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn btn-green btn-sm module-quiz-btn" onclick="quizFromModule(${i})">🧪 Quiz Me on This Module</button>
+          <button class="btn btn-outline btn-sm" onclick="askLulluAboutModule(${i})">🤖 Ask Lullu About This</button>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+}
+function toggleModule(card){card.classList.toggle('open')}
+function quizFromModule(modIdx){
+  const mod=learningModules[modIdx];
+  if(!mod)return;
+  const context=`Module: ${mod.title}\nTopics: ${mod.topics.join(', ')}\nContent: ${mod.content.slice(0,1500)}`;
+  generateAIQuiz(context);
+  showPage('quiz');
+}
+function askLulluAboutModule(modIdx){
+  const mod=learningModules[modIdx];
+  if(!mod)return;
+  showPage('lullu');
+  setTimeout(()=>{askLullu(`Please explain the key concepts in "${mod.title}". The topics include: ${mod.topics.join(', ')}`)},300);
+}
+ 
+// ========== CHECKIN ==========
+function selMood(el){document.querySelectorAll('#page-landing .emoji-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel')}
+function selCheckin(el,score,emoji){
+  document.querySelectorAll('.mood-opt').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  currentMood=score;currentMoodEmoji=emoji;
+  const cfg=moodCfg[score];
+  const box=document.getElementById('moodAdjBox');
+  document.getElementById('moodAdjTitle').textContent=cfg.emoji+' '+cfg.title;
+  document.getElementById('moodAdjText').textContent=cfg.text;
+  box.style.display='block';
+  box.style.borderLeftColor=cfg.color;
+  box.style.background=score<=2?'rgba(255,77,77,.06)':score>=4?'rgba(0,255,153,.06)':'var(--surf)';
+  // Update dashboard mood display
+  updateMoodDisplays();
+}
+function updateMoodDisplays(){
+  const cfg=moodCfg[currentMood];
+  const md=document.getElementById('dashMoodDisplay');if(md)md.textContent=cfg.emoji+' '+cfg.label;
+  const baseSH=4;const adj=baseSH*(1+cfg.adj/100);
+  const sh=document.getElementById('dashStudyHours');if(sh)sh.textContent=adj.toFixed(1)+' hrs';
+  const ph=document.getElementById('plannerHours');if(ph)ph.textContent=adj.toFixed(1)+' hrs';
+  const pa=document.getElementById('plannerAdj');if(pa)pa.textContent=(cfg.adj>=0?'+':'')+cfg.adj+'%';
+}
+function submitCheckin(){
+  const cfg=moodCfg[currentMood];
+  toast('Mood logged: '+cfg.emoji+' '+cfg.label+' · Plan adjusted '+(cfg.adj>=0?'+':'')+cfg.adj+'%');
+  setTimeout(()=>showPage('planner'),1100);
+}
+ 
+// ========== PLANNER ==========
+function initPlanner(){
+  const cfg=moodCfg[currentMood];
+  const pmb=document.getElementById('plannerMoodBadge');if(pmb)pmb.textContent=cfg.emoji+' '+cfg.label+' — '+(cfg.adj===0?'Standard plan':(cfg.adj>0?'+':'')+cfg.adj+'% adjusted');
+  const base=4;const adj=Math.round(base*(1+cfg.adj/100)*10)/10;
+  const pt=document.getElementById('plannerTotal');if(pt)pt.textContent='Planned: '+adj+' hrs';
+  const tp=document.getElementById('trackerPlanned');if(tp)tp.textContent=adj+' hrs';
+  updateMoodDisplays();
+  const blocks=[
+    {time:'9:00 AM',title:'Data Structures — Binary Trees',sub:'CS 301 · Focus: Tree traversal algorithms',dur:'1h 30m',color:'var(--r)'},
+    {time:'10:30 AM',title:'☕ Break',sub:'Walk. Hydrate. Breathe.',dur:'15m',color:'var(--border)'},
+    {time:'10:45 AM',title:'Psychology — Cognitive Biases',sub:'Psych 201 · Chapter 6',dur:'1h',color:'var(--a)'},
+    {time:'11:45 AM',title:'🍱 Lunch Break',sub:'Eat. Rest. Recharge.',dur:'45m',color:'var(--border)'},
+    {time:'12:30 PM',title:'Biology — Cell Division',sub:'Bio 201 · Meiosis & Mitosis',dur:'1h',color:'var(--p)'},
+    {time:'1:30 PM',title:'History of Science — Reading',sub:'Chapter 5–7 before 2pm class',dur:'30m',color:'var(--g)'},
+    {time:'3:00 PM',title:'Revision + AI Quiz',sub:"Review today's topics · Earn XP",dur:'45m',color:'var(--gd)'},
+  ];
+  if(cfg.adj<0)blocks.splice(2,1);
+  if(cfg.adj>15)blocks.push({time:'4:00 PM',title:'🔥 BONUS: Advanced Problems',sub:'Challenge Mode — Extra XP',dur:'45m',color:'var(--a)});'});
+  const container=document.getElementById('timeBlocks');container.innerHTML='';
+  blocks.forEach(b=>{
+    const div=document.createElement('div');div.className='time-block';
+    div.innerHTML=`<div class="tb-time">${b.time}</div><div class="tb-color" style="background:${b.color}"></div><div class="tb-info"><div class="tb-title">${b.title}</div><div class="tb-sub">${b.sub}</div></div><div class="tb-dur">${b.dur}</div>`;
+    container.appendChild(div);
+  });
+  startClock();
+}
+ 
+// ========== AI QUIZ (real Claude API) ==========
+async function generateAIQuiz(context){
+  // Store context for quiz
+  window._quizContext=context;
+}
+async function initQuiz(){
+  quizCurrent=0;quizScore=0;quizAnswered=false;quizQuestions=[];
+  const container=document.getElementById('quizContainer');
+  // Determine source context
+  let ctx=window._quizContext||'';
+  if(!ctx&&documentContent){ctx=documentContent.slice(0,2000);}
+  if(!ctx&&(topics.length>0||manualCourses.length>0)){
+    ctx='Topics: '+[...topics,...manualCourses.flatMap(c=>c.topics)].join(', ');
+  }
+  const ql=document.getElementById('quizSourceLabel');
+  if(ql)ql.textContent=ctx?'from your uploaded syllabus':'on general study topics';
+  if(ctx){
+    // Use real Claude API to generate questions
+    container.innerHTML=`<div class="quiz-card"><div class="gen-loading"><div class="gen-spinner"></div><span>Generating AI quiz questions from your syllabus...</span></div></div>`;
+    try{
+      const questions=await generateQuestionsFromClaude(ctx);
+      quizQuestions=questions;
+      renderQuestion();
+    }catch(e){
+      // Fallback to static questions
+      quizQuestions=getStaticQuestions();
+      renderQuestion();
+    }
+  }else{
+    quizQuestions=getStaticQuestions();
+    renderQuestion();
+  }
+}
+async function generateQuestionsFromClaude(context){
+  const prompt=`You are an expert educator. Based on the following syllabus/course content, generate exactly 5 multiple choice quiz questions. 
+ 
+Content: """${context.slice(0,1500)}"""
+ 
+IMPORTANT: Return ONLY a valid JSON array with exactly this structure, no other text:
+[
+  {
+    "q": "Question text here?",
+    "opts": ["Option A", "Option B", "Option C", "Option D"],
+    "ans": 0,
+    "exp": "Brief explanation of why this answer is correct."
+  }
+]
+ 
+Rules:
+- "ans" is the index (0-3) of the correct answer in "opts"
+- Make questions test actual understanding, not just memorization
+- Make distractors plausible but clearly wrong to those who studied
+- Keep questions concise and clear`;
+ 
+  const response=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1000,
+      messages:[{role:'user',content:prompt}]
+    })
+  });
+  if(!response.ok)throw new Error('API error');
+  const data=await response.json();
+  const text=data.content.map(b=>b.type==='text'?b.text:'').join('');
+  // Parse JSON
+  const match=text.match(/\[[\s\S]*\]/);
+  if(!match)throw new Error('No JSON');
+  const questions=JSON.parse(match[0]);
+  if(!Array.isArray(questions)||questions.length===0)throw new Error('Bad format');
+  return questions;
+}
+function getStaticQuestions(){
+  return[
+    {q:'What is the time complexity of Binary Search?',opts:['O(n)','O(log n)','O(n²)','O(1)'],ans:1,exp:'Binary Search halves the search space each step, giving O(log n) complexity.'},
+    {q:'Which data structure follows LIFO (Last In, First Out)?',opts:['Queue','Linked List','Stack','Tree'],ans:2,exp:'A Stack operates on Last In, First Out — the last element pushed is the first popped.'},
+    {q:'What is mitosis?',opts:['Cell death','Cell division producing 2 identical cells','DNA replication only','Protein synthesis'],ans:1,exp:'Mitosis produces two genetically identical daughter cells from one parent cell.'},
+    {q:'Cognitive dissonance theory was proposed by?',opts:['Freud','Piaget','Festinger','Skinner'],ans:2,exp:'Leon Festinger proposed cognitive dissonance theory in 1957.'},
+    {q:'What best describes the Industrial Revolution?',opts:['Agricultural expansion','Steam power & mechanized manufacturing','The birth of the internet','Space exploration era'],ans:1,exp:'The Industrial Revolution (1760–1840) was driven by steam power and mechanized production.'},
+  ];
+}
+function renderQuestion(){
+  const container=document.getElementById('quizContainer');
+  if(quizCurrent>=quizQuestions.length){showQuizScore(container);return}
+  const q=quizQuestions[quizCurrent];
+  const pct=Math.round((quizCurrent/quizQuestions.length)*100);
+  container.innerHTML=`
+    <div class="quiz-card">
+      <div class="quiz-prog-bar"><div class="quiz-prog-fill" style="width:${pct}%"></div></div>
+      <div class="quiz-qnum">Question ${quizCurrent+1} of ${quizQuestions.length}</div>
+      <div class="quiz-qtext">${q.q}</div>
+      <div class="quiz-opts">
+        ${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}
+      </div>
+      <div class="quiz-actions">
+        <div style="font-size:.76rem;color:var(--mist)">Score: ${quizScore}/${quizCurrent}</div>
+        <button id="nextBtn" class="btn btn-green btn-sm" style="display:none" onclick="nextQ()">Next →</button>
+      </div>
+      <div class="quiz-explain" id="quizExp"></div>
+    </div>`;
+}
+function answerQuiz(idx){
+  if(quizAnswered)return;quizAnswered=true;
+  const q=quizQuestions[quizCurrent];
+  document.querySelectorAll('.quiz-opt').forEach((o,i)=>{
+    o.classList.add('disabled');
+    if(i===q.ans)o.classList.add('correct');
+    else if(i===idx)o.classList.add('wrong');
+  });
+  if(idx===q.ans)quizScore++;
+  const exp=document.getElementById('quizExp');
+  if(exp){exp.style.display='block';exp.textContent='💡 '+q.exp;}
+  const nb=document.getElementById('nextBtn');if(nb)nb.style.display='block';
+}
+function nextQ(){quizCurrent++;quizAnswered=false;renderQuestion()}
+function showQuizScore(container){
+  const pct=Math.round((quizScore/quizQuestions.length)*100);
+  const earned=pct>=80?30:pct>=60?20:10;xpPoints+=earned;
+  const xpEl=document.getElementById('dashXP');if(xpEl)xpEl.textContent=xpPoints;
+  container.innerHTML=`
+    <div class="quiz-score-card">
+      <div class="qsc-circle" style="border-color:${pct>=80?'var(--g)':pct>=60?'var(--a)':'var(--r)'}">
+        <div class="qsc-num">${quizScore}/${quizQuestions.length}</div>
+        <div class="qsc-lbl">${pct}%</div>
+      </div>
+      <h3 style="font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--ink);margin-bottom:.4rem">${pct>=80?'Excellent! 🎉':pct>=60?'Good work! 👍':'Keep going! 💪'}</h3>
+      <p style="font-size:.86rem;color:var(--mist);margin-bottom:1.3rem">You earned <strong style="color:var(--gdd)">+${earned} XP</strong>${pct>=80?' and a scratch card! 🎟️':''}</p>
+      <div style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-green" onclick="initQuiz()">Try Again</button>
+        <button class="btn btn-outline" onclick="showPage('rewards')">Rewards</button>
+        <button class="btn btn-ink" onclick="showPage('dashboard')">Dashboard</button>
+      </div>
+    </div>`;
+}
+ 
+// ========== LULLU AI (real Claude API) ==========
+async function sendLullu(){
+  const input=document.getElementById('lulluInput');
+  const sendBtn=document.getElementById('chatSendBtn');
+  const text=input.value.trim();if(!text)return;
+  input.value='';
+  sendBtn.disabled=true;
+  const chat=document.getElementById('lulluChat');
+  // User message
+  const userMsg=document.createElement('div');userMsg.className='chat-msg user';
+  userMsg.innerHTML=`<div class="chat-av user">A</div><div class="chat-bubble">${text.replace(/</g,'&lt;')}</div>`;
+  chat.appendChild(userMsg);
+  // Typing
+  const typing=document.createElement('div');typing.className='chat-msg ai';
+  typing.innerHTML='<div class="chat-av ai">CS</div><div class="chat-bubble"><div class="typing-ind"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+  chat.appendChild(typing);chat.scrollTop=chat.scrollHeight;
+  // Build context about their syllabus
+  const syllabusCtx=documentContent?`\n\nUser's Syllabus Content (first 1000 chars):\n${documentContent.slice(0,1000)}`:'';
+  const moodCtx=`\nUser's current mood: ${currentMoodEmoji} ${moodCfg[currentMood].label}`;
+  const systemPrompt=`You are Lullu, a friendly, warm, and knowledgeable AI study companion for Indian university students. You are powered by Claude AI and you help students with:
+- Explaining academic concepts clearly (use analogies, examples, break things down step by step)
+- Creating study plans and revision schedules
+- Motivating students when they feel overwhelmed
+- Answering subject-specific questions (CS, Biology, Psychology, History, Math, etc.)
+- Giving honest, practical advice
+- Being emotionally supportive like a genuine friend
+ 
+Your personality: warm, encouraging, slightly casual (like a helpful senior student), use emojis occasionally, never condescending, always honest. If you don't know something, say so.
+${moodCtx}${syllabusCtx}
+ 
+Keep responses concise but complete. Use formatting when helpful (bullet points, numbered lists). Be genuinely helpful.`;
+ 
+  try{
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:systemPrompt,
+        messages:[{role:'user',content:text}]
+      })
+    });
+    typing.remove();
+    if(!response.ok){
+      throw new Error('API error '+response.status);
+    }
+    const data=await response.json();
+    const reply=data.content.map(b=>b.type==='text'?b.text:'').join('').trim();
+    const aiMsg=document.createElement('div');aiMsg.className='chat-msg ai';
+    aiMsg.innerHTML=`<div class="chat-av ai">CS</div><div class="chat-bubble" style="white-space:pre-wrap">${reply.replace(/</g,'&lt;')}</div>`;
+    chat.appendChild(aiMsg);
+  }catch(e){
+    typing.remove();
+    // Friendly fallback
+    const fallback=getFallbackResponse(text);
+    const aiMsg=document.createElement('div');aiMsg.className='chat-msg ai';
+    aiMsg.innerHTML=`<div class="chat-av ai">CS</div><div class="chat-bubble" style="white-space:pre-wrap">${fallback}</div>`;
+    chat.appendChild(aiMsg);
+  }
+  chat.scrollTop=chat.scrollHeight;
+  sendBtn.disabled=false;input.focus();
+}
+function getFallbackResponse(text){
+  const t=text.toLowerCase();
+  if(t.includes('motivat')||t.includes('overwhelm')||t.includes('stressed'))return"Hey, I hear you. It's okay to feel overwhelmed — it means you care. Here's what I want you to do: take one deep breath, then pick just ONE small task to do right now. Not everything. Just one. You already know how to study — you've done it before. You can do it now too. 💪\n\nNote: I'm running in offline mode right now — connect to the internet to get my full AI responses!";
+  if(t.includes('binary')||t.includes('tree')||t.includes('data struct'))return"A Binary Search Tree (BST) is like a sorted family tree. Each node has at most 2 children. The rule: LEFT child is always SMALLER, RIGHT child is always LARGER than the parent.\n\nWhy useful? Searching is O(log n) — you always know which half to check!\n\nVisually:\n     10\n    /  \\\n   5    15\n  / \\   /\n 3   7 12\n\nNote: I'm in offline mode — please check your internet connection for full AI responses!";
+  return"That's a great question! Unfortunately I'm in offline mode right now. Please check your internet connection to access my full AI capabilities. In the meantime, try looking at your learning modules or the planner! 📚";
+}
+function askLullu(text){
+  const input=document.getElementById('lulluInput');
+  if(input){input.value=text;sendLullu();}
+}
+ 
+// ========== PANIC ==========
+function initPanic(){
+  startBreathing();
+  startPanicTimer();
+}
+function exitPanic(){
+  clearTimeout(breatheTimeout);
+  clearInterval(panicTimerInterval);
+  stopAlarm();
+  showPage('dashboard');
+}
+function startBreathing(){
+  if(breatheTimeout)clearTimeout(breatheTimeout);
+  const el=document.getElementById('breatheTxt');if(!el)return;
+  let phase=0;
+  const phases=['breathe in...','hold...','breathe out...','hold...'];
+  const durations=[4000,1500,4000,1500];
+  function next(){if(el)el.textContent=phases[phase];phase=(phase+1)%4;}
+  next();
+  function tick(){breatheTimeout=setTimeout(()=>{next();tick()},durations[(phase+3)%4]);}tick();
+}
+function startPanicTimer(){
+  clearInterval(panicTimerInterval);
+  panicTimerSecs=600;// 10 minutes
+  updateTimerDisplay();
+  panicTimerInterval=setInterval(()=>{
+    panicTimerSecs--;
+    updateTimerDisplay();
+    if(panicTimerSecs<=0){
+      clearInterval(panicTimerInterval);
+      triggerAlarm();
+    }
+  },1000);
+}
+function updateTimerDisplay(){
+  const mins=Math.floor(panicTimerSecs/60);
+  const secs=panicTimerSecs%60;
+  const display=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+  const clock=document.getElementById('panicTimerClock');if(clock)clock.textContent=display;
+  const fill=document.getElementById('panicTimerFill');if(fill)fill.style.width=(panicTimerSecs/600*100)+'%';
+}
+function triggerAlarm(){
+  // Show alarm overlay
+  document.getElementById('alarmOverlay').classList.add('active');
+  // Try to play beep sound using Web Audio API
+  playAlarmSound();
+  // Show stop button on panic page too
+  const stopBtn=document.getElementById('stopAlarmBtn');if(stopBtn)stopBtn.style.display='block';
+  const clock=document.getElementById('panicTimerClock');if(clock)clock.classList.add('alarm-ringing');
+}
+let alarmSoundInterval=null;
+function playAlarmSound(){
+  // Web Audio API beeping
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    function beep(){
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.frequency.value=880;osc.type='square';
+      gain.gain.setValueAtTime(0.3,ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.5);
+      osc.start(ctx.currentTime);osc.stop(ctx.currentTime+0.5);
+    }
+    beep();
+    alarmSoundInterval=setInterval(beep,800);
+  }catch(e){}
+}
+function stopAlarm(){
+  // Clear alarm
+  if(alarmSoundInterval)clearInterval(alarmSoundInterval);alarmSoundInterval=null;
+  clearInterval(panicTimerInterval);
+  document.getElementById('alarmOverlay').classList.remove('active');
+  const clock=document.getElementById('panicTimerClock');if(clock)clock.classList.remove('alarm-ringing');
+  const stopBtn=document.getElementById('stopAlarmBtn');if(stopBtn)stopBtn.style.display='none';
+  // Navigate back to planner
+  showPage('planner');
+  toast('💪 Welcome back! Time to focus. You can do this.');
+}
+ 
+// ========== REWARDS ==========
+function initRewards(){
+  const dots=document.getElementById('streakDots');if(!dots)return;dots.innerHTML='';
+  ['M','T','W','T','F','S','S'].forEach((d,i)=>{
+    const div=document.createElement('div');div.className='streak-dot'+(i<6?' done':i===6?' today':'');
+    div.textContent=d;dots.appendChild(div);
+  });
+}
+function revealScratch(el){
+  if(el.dataset.rv)return;el.dataset.rv='1';
+  const prizes=['₹50 Swiggy Discount! 🍕','₹30 Amazon Coupon! 🛒','Free Udemy Course! 🎓','2x XP for 24hrs! ⚡','₹20 BookMyShow! 🎬'];
+  const prize=prizes[Math.floor(Math.random()*prizes.length)];
+  el.style.background='linear-gradient(135deg,var(--g),var(--gd))';
+  el.style.color='var(--ink)';
+  el.innerHTML=`<h3>🎉 You Won!</h3><p style="font-weight:700;font-size:.92rem">${prize}</p>`;
+  xpPoints+=50;toast('🎟️ Scratch card revealed! +50 XP');
+}
+ 
+// ========== PAGE INITS ==========
+function initLanding(){initLandingHeatmap();buildMoodBars('moodPreviewBars',60);}
+function initDashboard(){
+  initDashHeatmap();buildMoodBars('dashMoodBars',64);
+  updateMoodDisplays();
+  const tdl=document.getElementById('todayDateLbl');
+  if(tdl)tdl.textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'});
+  startClock();
+}
+function initCheckin(){buildMoodBars('checkinBars',72);}
+ 
+// ========== UTILITY ==========
+function toast(msg){
+  const t=document.getElementById('toast');if(!t)return;
+  t.textContent=msg;t.style.opacity='1';t.style.transform='translateY(0)';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(8px)'},3500);
+}
+ 
+// ========== KEYBOARD SHORTCUTS ==========
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&document.getElementById('page-panic').classList.contains('active')){exitPanic();}
+});
+ 
+// ========== BOOT ==========
+window.addEventListener('DOMContentLoaded',()=>{
+  // PDF.js setup
+  if(typeof pdfjsLib!=='undefined'){
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    window['pdfjs-dist/build/pdf']=pdfjsLib;
+  }
+  initLanding();
+});
+initLanding();
+</script>
+</body>
+</html>
